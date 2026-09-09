@@ -257,52 +257,70 @@ const ttImage = document.getElementById("ttImage");
 const ttPlaceholder = document.getElementById("ttPlaceholder");
 const ttStatus = document.getElementById("ttStatus");
 
+const MAX_IMAGE_BYTES = 700 * 1024; // keep comfortably under Firestore 1MB doc limit
+
+function readFileAsDataURL(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 ttUpload.addEventListener("change", async () => {
-  const file = ttUpload.files[0];
+  const file = ttUpload.files?.[0];
   if (!file || !currentUid) return;
-  ttStatus.textContent = "Uploading…";
+
+  if (!file.type.startsWith("image/")) {
+    ttStatus.textContent = "Please choose an image file.";
+    return;
+  }
+  if (file.size > MAX_IMAGE_BYTES) {
+    ttStatus.textContent = "Image too large. Please use a smaller/compressed image.";
+    return;
+  }
+
+  ttStatus.textContent = "Saving…";
   try {
-    const imgRef = ref(storage, `users/${currentUid}/timetable.jpg`);
-    await uploadBytes(imgRef, file);
-    const url = await getDownloadURL(imgRef);
-    ttImage.src = url;
+    const dataUrl = await readFileAsDataURL(file);
+    await setDoc(
+      doc(db, "users", currentUid),
+      { timetableDataUrl: dataUrl, timetableUpdatedAt: serverTimestamp() },
+      { merge: true }
+    );
+
+    ttImage.src = dataUrl;
     ttImage.hidden = false;
     ttPlaceholder.hidden = true;
     ttStatus.textContent = "Updated just now.";
   } catch (e) {
-    ttStatus.textContent = "Upload failed — check your connection and try again.";
+    console.error("Timetable save error:", e);
+    ttStatus.textContent = "Save failed. Try a smaller image.";
+  } finally {
+    ttUpload.value = "";
   }
 });
 
 async function loadTimetable(uid) {
   try {
-    const url = await getDownloadURL(ref(storage, `users/${uid}/timetable.jpg`));
-    ttImage.src = url;
-    ttImage.hidden = false;
-    ttPlaceholder.hidden = true;
-  } catch {
+    const userSnap = await getDoc(doc(db, "users", uid));
+    const dataUrl = userSnap.exists() ? userSnap.data().timetableDataUrl : null;
+
+    if (dataUrl) {
+      ttImage.src = dataUrl;
+      ttImage.hidden = false;
+      ttPlaceholder.hidden = true;
+    } else {
+      ttImage.hidden = true;
+      ttPlaceholder.hidden = false;
+    }
+  } catch (e) {
+    console.error("Timetable load error:", e);
     ttImage.hidden = true;
     ttPlaceholder.hidden = false;
   }
 }
-
-// ---------------------------------------------------------------- sync bootstrap
-function startSync(uid) {
-  currentUid = uid;
-
-  const hwQ = query(collection(db, "users", uid, "homework"), orderBy("due", "asc"));
-  unsubHw = onSnapshot(hwQ, (snap) => {
-    renderHomework(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
-  });
-
-  const notesQ = query(collection(db, "users", uid, "notes"), orderBy("createdAt", "desc"));
-  unsubNotes = onSnapshot(notesQ, (snap) => {
-    renderNotes(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
-  });
-
-  loadTimetable(uid);
-}
-
 // ---------------------------------------------------------------- export / backup
 document.getElementById("exportBtn").addEventListener("click", async () => {
   if (!currentUid) return;
