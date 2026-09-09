@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Study Deck</title>
+<meta name="description" content="Homework, timetable, and notes in one place." />
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#0F1115" />
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- ============ SIGN-IN GATE ============ -->
+<div id="gate" class="gate">
+  <div class="gate-card">
+    <p class="gate-mark">Study Deck</p>
+    <h1 class="gate-title">Everything for the term,<br>in one quiet place.</h1>
+    <p class="gate-sub">Homework, your weekly timetable, and quick notes — synced, private, and yours alone.</p>
+    <div class="gate-actions">
+      <button id="googleBtn" class="btn btn-primary">Continue with Google</button>
+      <div class="gate-divider"><span>or</span></div>
+      <form id="emailForm" class="gate-form">
+        <input type="email" id="emailInput" placeholder="Email" autocomplete="email" required />
+        <input type="password" id="passInput" placeholder="Password" autocomplete="current-password" required />
+        <div class="gate-form-row">
+          <button type="submit" class="btn btn-ghost">Sign in</button>
+          <button type="button" id="registerBtn" class="btn btn-text">Create account</button>
+        </div>
+      </form>
+    </div>
+    <p id="gateError" class="gate-error" hidden></p>
+    <p id="gateLocked" class="gate-error" hidden>This deck is set up for one account only. Signed-in identity doesn't match the owner UID in <code>firebase-config.js</code>.</p>
+  </div>
+</div>
+
+<!-- ============ APP SHELL ============ -->
+<div id="app" class="app" hidden>
+
+  <aside class="rail">
+    <div class="rail-top">
+      <p class="rail-mark">Study Deck</p>
+      <nav class="rail-nav" id="railNav">
+        <button class="rail-link is-active" data-panel="homework">
+          <span class="rail-glyph" data-glyph="hw"></span>
+          Homework
+        </button>
+        <button class="rail-link" data-panel="timetable">
+          <span class="rail-glyph" data-glyph="tt"></span>
+          Timetable
+        </button>
+        <button class="rail-link" data-panel="notes">
+          <span class="rail-glyph" data-glyph="nt"></span>
+          Notes
+        </button>
+      </nav>
+    </div>
+    <div class="rail-bottom">
+      <button id="exportBtn" class="rail-util">Download my data</button>
+      <button id="signOutBtn" class="rail-util">Sign out</button>
+      <p id="userEmail" class="rail-user"></p>
+    </div>
+  </aside>
+
+  <main class="stage">
+
+    <!-- ---------- HOMEWORK ---------- -->
+    <section class="panel is-active" id="panel-homework" aria-labelledby="hw-heading">
+      <header class="panel-head">
+        <h1 id="hw-heading">Homework</h1>
+        <p class="panel-sub">Add it once, check it off when it's done.</p>
+      </header>
+
+      <form id="hwForm" class="hw-form">
+        <input type="text" id="hwSubject" placeholder="Subject" required />
+        <input type="text" id="hwTask" placeholder="What's the task?" required />
+        <input type="date" id="hwDue" required />
+        <button type="submit" class="btn btn-primary">Add</button>
+      </form>
+
+      <div class="hw-groups" id="hwGroups">
+        <!-- populated by JS -->
+      </div>
+
+      <p class="empty-note" id="hwEmpty" hidden>Nothing on the list. Add your first item above.</p>
+    </section>
+
+    <!-- ---------- TIMETABLE ---------- -->
+    <section class="panel" id="panel-timetable" aria-labelledby="tt-heading">
+      <header class="panel-head">
+        <h1 id="tt-heading">Timetable</h1>
+        <p class="panel-sub">The same week, every week. Replace the image any time it changes.</p>
+      </header>
+
+      <div class="tt-frame" id="ttFrame">
+        <img id="ttImage" alt="Weekly timetable" hidden />
+        <div class="tt-placeholder" id="ttPlaceholder">
+          <p>No timetable uploaded yet.</p>
+        </div>
+      </div>
+
+      <label class="btn btn-ghost tt-upload-btn">
+        Upload timetable image
+        <input type="file" id="ttUpload" accept="image/*" hidden />
+      </label>
+      <p class="tt-status" id="ttStatus"></p>
+    </section>
+
+    <!-- ---------- NOTES ---------- -->
+    <section class="panel" id="panel-notes" aria-labelledby="nt-heading">
+      <header class="panel-head">
+        <h1 id="nt-heading">Notes</h1>
+        <p class="panel-sub">Short reminders. No dates, no clutter.</p>
+      </header>
+
+      <form id="noteForm" class="note-form">
+        <textarea id="noteText" placeholder="Write a quick note…" maxlength="280" required></textarea>
+        <button type="submit" class="btn btn-primary">Pin note</button>
+      </form>
+
+      <div class="note-grid" id="noteGrid"></div>
+      <p class="empty-note" id="noteEmpty" hidden>No notes pinned yet.</p>
+    </section>
+
+  </main>
+</div>
+
+<script type="module" src="firebase-config.js"></script>
+<script type="module" src="app.js"></script>
+</body>
+</html>
