@@ -9,6 +9,6 @@ export const firebaseConfig = {
 
 // Paste your own Firebase Auth UID here after your first sign-in.
 // app.js will refuse to load data for anyone whose UID doesn't match this,
-// so this is what keeps the deck single-user even though Google sign-in
-// is technically open to any Google account.
+// so this is what keeps the deck single-user even though email/password
+// auth can technically allow any registered account.
 export const OWNER_UID = "v6EqAMYvhrWbowupmvEwYd4gUlA3";

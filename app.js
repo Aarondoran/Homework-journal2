@@ -2,7 +2,7 @@ import { firebaseConfig, OWNER_UID } from "./firebase-config.js";
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
 import {
-  getAuth, GoogleAuthProvider, signInWithPopup,
+  getAuth,
   createUserWithEmailAndPassword, signInWithEmailAndPassword,
   onAuthStateChanged, signOut,
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
@@ -29,15 +29,6 @@ let unsubHw = null;
 let unsubNotes = null;
 
 // ---------------------------------------------------------------- auth
-document.getElementById("googleBtn").addEventListener("click", async () => {
-  gateError.hidden = true;
-  try {
-    await signInWithPopup(auth, new GoogleAuthProvider());
-  } catch (e) {
-    showGateError(e);
-  }
-});
-
 document.getElementById("emailForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   gateError.hidden = true;
@@ -80,7 +71,6 @@ function humanizeAuthError(code) {
     "auth/email-already-in-use": "An account with that email already exists — sign in instead.",
     "auth/weak-password": "Use at least 6 characters.",
     "auth/invalid-email": "That email doesn't look right.",
-    "auth/popup-closed-by-user": "Sign-in was closed before it finished.",
   };
   return map[code];
 }

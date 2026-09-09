@@ -143,20 +143,6 @@ button, input, textarea {
 
 .gate-actions { display: flex; flex-direction: column; gap: 16px; }
 
-.gate-divider {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: var(--text-faint);
-  font-size: 12px;
-}
-.gate-divider::before, .gate-divider::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: var(--border);
-}
-
 .gate-form {
   display: flex;
   flex-direction: column;
