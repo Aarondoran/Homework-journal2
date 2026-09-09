@@ -5,6 +5,9 @@
    Accent: #4FB0A5 (teal, active/done)   Warn: #E0A458 (amber, due soon/overdue)
    Display type: Fraunces (serif, personality) — Body/UI: Inter (sans)
    ========================================================================== */
+[hidden] {
+  display: none !important;
+}
 
 :root {
   --bg: #0F1115;
