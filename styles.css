@@ -389,6 +389,15 @@ button, input, textarea {
 
 .tt-status { font-size: 12.5px; color: var(--text-faint); margin-top: 10px; }
 
+.status-text {
+  font-size: 12.5px;
+  color: var(--text-faint);
+  min-height: 18px;
+  margin: 10px 2px 0;
+}
+.status-text.is-error { color: var(--danger); }
+.status-text.is-success { color: var(--accent); }
+
 /* ---------------------------------- Notes ---------------------------------- */
 
 .note-form {
