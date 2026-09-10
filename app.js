@@ -75,6 +75,7 @@ onAuthStateChanged(auth, (user) => {
   if (!user) {
     gate.hidden = false;
     appShell.hidden = true;
+    currentUid = null;
     if (unsubHw) unsubHw();
     if (unsubNotes) unsubNotes();
     return;
@@ -118,6 +119,7 @@ railNav.addEventListener("click", (e) => {
 const hwForm = document.getElementById("hwForm");
 const hwGroups = document.getElementById("hwGroups");
 const hwEmpty = document.getElementById("hwEmpty");
+const hwStatus = document.getElementById("hwStatus");
 let currentUid = null;
 
 hwForm.addEventListener("submit", async (e) => {
@@ -126,10 +128,19 @@ hwForm.addEventListener("submit", async (e) => {
   const subject = document.getElementById("hwSubject").value.trim();
   const task = document.getElementById("hwTask").value.trim();
   const due = document.getElementById("hwDue").value;
-  await addDoc(collection(db, "users", currentUid, "homework"), {
-    subject, task, due, done: false, createdAt: serverTimestamp(),
-  });
-  hwForm.reset();
+  if (!subject || !task || !due) {
+    setStatus(hwStatus, "Please enter subject, task, and due date.", true);
+    return;
+  }
+  try {
+    await addDoc(collection(db, "users", currentUid, "homework"), {
+      subject, task, due, done: false, createdAt: serverTimestamp(),
+    });
+    hwForm.reset();
+    setStatus(hwStatus, "Homework saved.");
+  } catch (err) {
+    setStatus(hwStatus, humanizeFirestoreError(err), true);
+  }
 });
 
 function renderHomework(items) {
@@ -178,9 +189,14 @@ function buildHwItem(it, bucketKey) {
   check.className = "hw-check" + (it.done ? " checked" : "");
   check.type = "button";
   check.setAttribute("aria-label", it.done ? "Mark as not done" : "Mark as done");
-  check.addEventListener("click", () =>
-    updateDoc(doc(db, "users", currentUid, "homework", it.id), { done: !it.done })
-  );
+  check.addEventListener("click", async () => {
+    try {
+      await updateDoc(doc(db, "users", currentUid, "homework", it.id), { done: !it.done });
+      setStatus(hwStatus, "Homework updated.");
+    } catch (err) {
+      setStatus(hwStatus, humanizeFirestoreError(err), true);
+    }
+  });
 
   const body = document.createElement("div");
   body.className = "hw-body";
@@ -217,16 +233,25 @@ function escapeHtml(str) {
 const noteForm = document.getElementById("noteForm");
 const noteGrid = document.getElementById("noteGrid");
 const noteEmpty = document.getElementById("noteEmpty");
+const noteStatus = document.getElementById("noteStatus");
 
 noteForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   if (!currentUid) return;
   const text = document.getElementById("noteText").value.trim();
-  if (!text) return;
-  await addDoc(collection(db, "users", currentUid, "notes"), {
-    text, createdAt: serverTimestamp(),
-  });
-  noteForm.reset();
+  if (!text) {
+    setStatus(noteStatus, "Please add a note before saving.", true);
+    return;
+  }
+  try {
+    await addDoc(collection(db, "users", currentUid, "notes"), {
+      text, createdAt: serverTimestamp(),
+    });
+    noteForm.reset();
+    setStatus(noteStatus, "Note saved.");
+  } catch (err) {
+    setStatus(noteStatus, humanizeFirestoreError(err), true);
+  }
 });
 
 function renderNotes(items) {
@@ -271,6 +296,49 @@ function loadStaticTimetable() {
   };
 
   ttImage.src = TIMETABLE_IMAGE_PATH;
+}
+
+function startSync(uid) {
+  currentUid = uid;
+  if (unsubHw) unsubHw();
+  if (unsubNotes) unsubNotes();
+
+  unsubHw = onSnapshot(
+    query(collection(db, "users", uid, "homework"), orderBy("createdAt", "desc")),
+    (snap) => {
+      renderHomework(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+    },
+    (err) => {
+      setStatus(hwStatus, humanizeFirestoreError(err), true);
+    }
+  );
+
+  unsubNotes = onSnapshot(
+    query(collection(db, "users", uid, "notes"), orderBy("createdAt", "desc")),
+    (snap) => {
+      renderNotes(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+    },
+    (err) => {
+      setStatus(noteStatus, humanizeFirestoreError(err), true);
+    }
+  );
+}
+
+function setStatus(el, message, isError = false) {
+  if (!el) return;
+  el.textContent = message || "";
+  el.classList.toggle("is-error", !!isError);
+  el.classList.toggle("is-success", !!message && !isError);
+}
+
+function humanizeFirestoreError(err) {
+  const code = err?.code || "";
+  const map = {
+    "permission-denied": "Save failed: permission denied. Check Firebase rules and signed-in account.",
+    "unavailable": "Save failed: Firestore is unavailable right now. Please try again.",
+    "failed-precondition": "Save failed: required Firestore index/config is missing.",
+  };
+  return map[code] || "Save failed. Please try again.";
 }
 // ---------------------------------------------------------------- export / backup
 document.getElementById("exportBtn").addEventListener("click", async () => {
