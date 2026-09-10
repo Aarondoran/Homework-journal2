@@ -8,7 +8,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 import {
   getFirestore, collection, doc, addDoc, updateDoc, deleteDoc,
-  onSnapshot, query, orderBy, serverTimestamp, getDocs, getDoc, setDoc,
+  onSnapshot, query, orderBy, serverTimestamp, getDocs,
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
 const app = initializeApp(firebaseConfig);
@@ -99,6 +99,7 @@ onAuthStateChanged(auth, (user) => {
   gateLocked.hidden = true;
   appShell.hidden = false;
   document.getElementById("userEmail").textContent = user.email || "";
+  loadStaticTimetable();
   startSync(user.uid);
 });
 
@@ -248,76 +249,28 @@ function renderNotes(items) {
 }
 
 // ---------------------------------------------------------------- timetable
-const ttUpload = document.getElementById("ttUpload");
 const ttImage = document.getElementById("ttImage");
 const ttPlaceholder = document.getElementById("ttPlaceholder");
 const ttStatus = document.getElementById("ttStatus");
 
-const MAX_IMAGE_BYTES = 700 * 1024; // keep comfortably under Firestore 1MB doc limit
+const TIMETABLE_IMAGE_PATH = "timetable.jpg";
 
-function readFileAsDataURL(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
+function loadStaticTimetable() {
+  if (!ttImage) return;
 
-ttUpload.addEventListener("change", async () => {
-  const file = ttUpload.files?.[0];
-  if (!file || !currentUid) return;
-
-  if (!file.type.startsWith("image/")) {
-    ttStatus.textContent = "Please choose an image file.";
-    ttUpload.value = "";
-    return;
-  }
-  if (file.size > MAX_IMAGE_BYTES) {
-    ttStatus.textContent = "Image too large. Please use a smaller/compressed image.";
-    ttUpload.value = "";
-    return;
-  }
-
-  ttStatus.textContent = "Saving…";
-  try {
-    const dataUrl = await readFileAsDataURL(file);
-    await setDoc(
-      doc(db, "users", currentUid),
-      { timetableDataUrl: dataUrl, timetableUpdatedAt: serverTimestamp() },
-      { merge: true }
-    );
-
-    ttImage.src = dataUrl;
+  ttImage.onload = () => {
     ttImage.hidden = false;
-    ttPlaceholder.hidden = true;
-    ttStatus.textContent = "Updated just now.";
-  } catch (e) {
-    console.error("Timetable save error:", e);
-    ttStatus.textContent = "Save failed. Try a smaller image.";
-  } finally {
-    ttUpload.value = "";
-  }
-});
+    if (ttPlaceholder) ttPlaceholder.hidden = true;
+    if (ttStatus) ttStatus.textContent = "";
+  };
 
-async function loadTimetable(uid) {
-  try {
-    const userSnap = await getDoc(doc(db, "users", uid));
-    const dataUrl = userSnap.exists() ? userSnap.data().timetableDataUrl : null;
-
-    if (dataUrl) {
-      ttImage.src = dataUrl;
-      ttImage.hidden = false;
-      ttPlaceholder.hidden = true;
-    } else {
-      ttImage.hidden = true;
-      ttPlaceholder.hidden = false;
-    }
-  } catch (e) {
-    console.error("Timetable load error:", e);
+  ttImage.onerror = () => {
     ttImage.hidden = true;
-    ttPlaceholder.hidden = false;
-  }
+    if (ttPlaceholder) ttPlaceholder.hidden = false;
+    if (ttStatus) ttStatus.textContent = "Couldn't load timetable.jpg";
+  };
+
+  ttImage.src = TIMETABLE_IMAGE_PATH;
 }
 // ---------------------------------------------------------------- export / backup
 document.getElementById("exportBtn").addEventListener("click", async () => {
