@@ -8,16 +8,12 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 import {
   getFirestore, collection, doc, addDoc, updateDoc, deleteDoc,
-  onSnapshot, query, orderBy, serverTimestamp, getDocs,
+  onSnapshot, query, orderBy, serverTimestamp, getDocs, getDoc, setDoc,
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
-import {
-  getStorage, ref, uploadBytes, getDownloadURL,
-} from "https://www.gstatic.com/firebasejs/10.13.0/firebase-storage.js";
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-const storage = getStorage(app);
 
 // ---------------------------------------------------------------- elements
 const gate = document.getElementById("gate");
@@ -274,10 +270,12 @@ ttUpload.addEventListener("change", async () => {
 
   if (!file.type.startsWith("image/")) {
     ttStatus.textContent = "Please choose an image file.";
+    ttUpload.value = "";
     return;
   }
   if (file.size > MAX_IMAGE_BYTES) {
     ttStatus.textContent = "Image too large. Please use a smaller/compressed image.";
+    ttUpload.value = "";
     return;
   }
 
