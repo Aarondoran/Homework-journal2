@@ -455,7 +455,7 @@ button, input, textarea {
   color: var(--text);
   font-weight: 600;
   font-size: 15px;
-  padding: 6px 4.5px;
+  padding: 12px 4.5px;
   text-align: center;
 }
 
@@ -468,7 +468,7 @@ button, input, textarea {
   color: var(--text-muted);
   font-size: 13.5px;
   font-weight: 500;
-  padding: 12px 4.5px;
+  padding: 24px 4.5px;
   text-align: center;
   vertical-align: middle;
   line-height: 1.15;
@@ -478,7 +478,7 @@ button, input, textarea {
   background: #3A3320;
   color: var(--text);
   font-size: 15px;
-  padding: 12px 4.5px;
+  padding: 24px 4.5px;
   text-align: center;
   font-weight: 500;
 }
@@ -487,14 +487,14 @@ button, input, textarea {
   background: var(--bg);
   color: var(--text-faint);
   font-size: 13.5px;
-  padding: 9px 4.5px;
+  padding: 18px 4.5px;
   text-align: center;
   font-style: italic;
 }
 
 .tt-slot {
-  padding: 12px 6px;
-  min-height: 69px;
+  padding: 24px 6px;
+  min-height: 138px;
   transition: background 0.12s ease;
 }
 
@@ -608,8 +608,7 @@ button, input, textarea {
 
 .btn-danger-text:hover {
   text-decoration: underline;
-}
-/* ---------------------------------- Notes ---------------------------------- */
+}/* ---------------------------------- Notes ---------------------------------- */
 
 .note-form {
   display: flex;
