@@ -425,21 +425,19 @@ button, input, textarea {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 16px;
+  margin-bottom: 10px;
 }
 
 .tt-grid-wrap {
-  overflow-x: auto;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-m);
-  background: var(--surface);
+  width: 100%;
+  overflow: hidden;
 }
 
 .tt-grid {
+  width: 100%;
   border-collapse: collapse;
-  font-size: 11px;
-  width: auto;
-  table-layout: auto;
+  font-size: 10px;
+  table-layout: fixed;
 }
 
 .tt-grid th,
@@ -448,35 +446,39 @@ button, input, textarea {
   padding: 0;
   vertical-align: top;
   text-align: left;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .tt-grid thead th {
   background: var(--surface-raised);
   color: var(--text);
   font-weight: 600;
-  font-size: 11px;
-  letter-spacing: 0.02em;
-  padding: 6px 8px;
+  font-size: 10px;
+  padding: 4px 3px;
   text-align: center;
-  white-space: nowrap;
+}
+
+.tt-grid thead th:first-child {
+  width: 74px;
 }
 
 .tt-grid .tt-time {
   background: var(--surface-raised);
   color: var(--text-muted);
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 500;
-  padding: 6px 8px;
-  white-space: nowrap;
+  padding: 3px;
   text-align: center;
   vertical-align: middle;
+  line-height: 1.15;
 }
 
 .tt-grid .tt-tutor td {
   background: #3A3320;
   color: var(--text);
-  font-size: 11px;
-  padding: 5px 8px;
+  font-size: 10px;
+  padding: 3px;
   text-align: center;
   font-weight: 500;
 }
@@ -484,16 +486,17 @@ button, input, textarea {
 .tt-grid .tt-break td {
   background: var(--bg);
   color: var(--text-faint);
-  font-size: 10px;
-  padding: 4px 8px;
+  font-size: 9px;
+  padding: 2px 3px;
   text-align: center;
   font-style: italic;
 }
 
 .tt-slot {
-  padding: 5px 7px;
+  padding: 3px 4px;
   transition: background 0.12s ease;
 }
+
 .tt-slot:hover {
   background: var(--surface-raised);
 }
@@ -501,22 +504,20 @@ button, input, textarea {
 .tt-slot.is-empty {
   color: var(--text-faint);
   font-style: italic;
-  font-size: 10px;
+  font-size: 9px;
 }
 
 .tt-subject {
   font-weight: 600;
-  font-size: 11px;
+  font-size: 10px;
   color: var(--text);
-  line-height: 1.25;
-  overflow-wrap: anywhere;
+  line-height: 1.15;
 }
 
 .tt-meta {
-  font-size: 10px;
+  font-size: 9px;
   color: var(--text-muted);
-  line-height: 1.3;
-  overflow-wrap: anywhere;
+  line-height: 1.15;
 }
 
 .tt-slot[data-color="0"] { background: rgba(79,176,165,0.14); }
@@ -578,7 +579,10 @@ button, input, textarea {
   padding: 11px 13px;
   font-size: 14px;
 }
-.tt-modal input:focus { border-color: var(--accent); }
+
+.tt-modal input:focus {
+  border-color: var(--accent);
+}
 
 .tt-modal-actions {
   display: flex;
@@ -600,7 +604,10 @@ button, input, textarea {
   cursor: pointer;
   padding: 11px 4px;
 }
-.btn-danger-text:hover { text-decoration: underline; }
+
+.btn-danger-text:hover {
+  text-decoration: underline;
+}
 /* ---------------------------------- Notes ---------------------------------- */
 
 .note-form {
