@@ -1,5 +1,3 @@
-import { firebaseConfig, OWNER_UID } from "./firebase-config.js";
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
 import {
   getAuth,
@@ -96,16 +94,7 @@ onAuthStateChanged(auth, (user) => {
     return;
   }
 
-  const ownerConfigured = OWNER_UID && OWNER_UID !== "PASTE_YOUR_UID_HERE";
-
-  if (ownerConfigured && user.uid !== OWNER_UID) {
-    gate.hidden = false;
-    appShell.hidden = true;
-    gateLocked.hidden = false;
-    signOut(auth);
-    return;
-  }
-
+  
   gate.hidden = true;
   gateLocked.hidden = true;
   appShell.hidden = false;
