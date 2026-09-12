@@ -9,6 +9,7 @@ import {
   getRedirectResult,
   linkWithPopup,
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+
 import {
   getFirestore, collection, doc, addDoc, updateDoc, deleteDoc,
   onSnapshot, query, orderBy, serverTimestamp, getDocs,
@@ -417,7 +418,42 @@ if (linkBtn) {
     }
   });
 }
+// ---------------------------------------------------------------- Connect Google
 
+// Link Google account to currently signed-in user
+const linkBtn = document.getElementById("linkGoogleBtn");
+if (linkBtn) {
+  linkBtn.addEventListener("click", async () => {
+    // Check if a user is logged in
+    if (!auth.currentUser) {
+      setStatus(hwStatus, "Sign in first to link accounts.", true);
+      return;
+    }
+    
+    try {
+      // Prompt user to sign in with Google to link accounts
+      const result = await linkWithPopup(auth.currentUser, googleProvider);
+      
+      // Verify that emails match (enforce same-email requirement)
+      const linkedEmail = result?.user?.email;
+      const currentEmail = auth.currentUser?.email;
+      
+      if (linkedEmail && currentEmail && linkedEmail.toLowerCase() !== currentEmail.toLowerCase()) {
+        setStatus(hwStatus, "Linked Google account email doesn't match signed-in account.", true);
+        console.warn('Linked email mismatch', linkedEmail, currentEmail);
+        return;
+      }
+      
+      setStatus(hwStatus, "Google account linked.");
+      console.log("Successfully linked Google account", result.user);
+      
+    } catch (err) {
+      // Show clean, readable error messages
+      setStatus(hwStatus, humanizeAuthError(err?.code) || "Error linking Google account.", true);
+      console.error("Error linking Google account:", err);
+    }
+  });
+}
 // ---------------------------------------------------------------- PWA
 if ("serviceWorker" in navigator) {
   // No offline caching requested — manifest alone enables "Add to Home Screen".
