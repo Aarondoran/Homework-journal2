@@ -7,6 +7,7 @@ import {
   GoogleAuthProvider,
   signInWithRedirect,
   getRedirectResult,
+  linkWithPopup,
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 import {
   getFirestore, collection, doc, addDoc, updateDoc, deleteDoc,
@@ -389,6 +390,33 @@ document.getElementById("exportBtn").addEventListener("click", async () => {
   a.click();
   URL.revokeObjectURL(a.href);
 });
+
+// Link Google account to currently signed-in user
+const linkBtn = document.getElementById("linkGoogleBtn");
+if (linkBtn) {
+  linkBtn.addEventListener("click", async () => {
+    if (!auth.currentUser) {
+      setStatus(hwStatus, "Sign in first to link accounts.", true);
+      return;
+    }
+    try {
+      const result = await linkWithPopup(auth.currentUser, googleProvider);
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      const linkedEmail = result?.user?.email;
+      const currentEmail = auth.currentUser?.email;
+      if (linkedEmail && currentEmail && linkedEmail.toLowerCase() !== currentEmail.toLowerCase()) {
+        setStatus(hwStatus, "Linked Google account email doesn't match signed-in account.", true);
+        console.warn('Linked email mismatch', linkedEmail, currentEmail);
+        return;
+      }
+      setStatus(hwStatus, "Google account linked.");
+      console.log("Successfully linked Google account", result.user);
+    } catch (err) {
+      setStatus(hwStatus, humanizeAuthError(err?.code) || "Error linking Google account.", true);
+      console.error("Error linking Google account:", err);
+    }
+  });
+}
 
 // ---------------------------------------------------------------- PWA
 if ("serviceWorker" in navigator) {
