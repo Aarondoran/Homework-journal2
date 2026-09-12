@@ -493,6 +493,7 @@ button, input, textarea {
 }
 .tt-slot {
   padding: 8px 4px;
+  min-height: 46px;
   transition: background 0.12s ease;
 }
 .tt-slot:hover {
