@@ -28,7 +28,6 @@
         <div class="gate-form-row">
           <button type="submit" class="btn btn-ghost">Sign in</button>
           <p class="gate-legal">By using our service you agree to the <a class="gate-legal" href="terms.html">Terms of Service</a> and <a class="gate-legal" href="privacy.html">Privacy Policy</a></p>
-          
         </div>
       </form>
     </div>
@@ -80,37 +79,33 @@
         <button type="submit" class="btn btn-primary">Add</button>
       </form>
 
-      <div class="hw-groups" id="hwGroups">
-        <!-- populated by JS -->
-      </div>
+      <div class="hw-groups" id="hwGroups"></div>
 
       <p class="empty-note" id="hwEmpty" hidden>Nothing on the list. Add your first item above.</p>
       <p class="status-text" id="hwStatus" aria-live="polite"></p>
     </section>
 
-   <!-- ---------- TIMETABLE ---------- -->
-<section class="panel" id="panel-timetable" aria-labelledby="tt-heading">
-  <header class="panel-head">
-    <h1 id="tt-heading">Timetable</h1>
-    <p class="panel-sub">Build your week once — it stays put.</p>
-  </header>
+    <!-- ---------- TIMETABLE ---------- -->
+    <section class="panel" id="panel-timetable" aria-labelledby="tt-heading">
+      <header class="panel-head">
+        <h1 id="tt-heading">Timetable</h1>
+        <p class="panel-sub">Build your week once — it stays put.</p>
+      </header>
 
-  <div class="tt-toolbar">
-    <button id="ttEditBtn" class="btn btn-ghost">Edit timetable</button>
-    <button id="ttClearBtn" class="btn btn-text">Clear all</button>
-  </div>
+      <div class="tt-toolbar">
+        <button id="ttEditBtn" class="btn btn-ghost" type="button">Edit timetable</button>
+        <button id="ttClearBtn" class="btn btn-text" type="button">Clear all</button>
+      </div>
 
-  <p class="status-text" id="ttStatus" aria-live="polite"></p>
+      <p class="status-text" id="ttStatus" aria-live="polite"></p>
 
-  <div class="tt-grid-wrap">
-    <table class="tt-grid" id="ttGrid">
-      <!-- populated by JS -->
-    </table>
-  </div>
+      <div class="tt-grid-wrap">
+        <table class="tt-grid" id="ttGrid"></table>
+      </div>
 
-  <p class="empty-note" id="ttEmpty" hidden>No timetable yet. Tap "Edit timetable" to set it up.</p>
-</section>
-    
+      <p class="empty-note" id="ttEmpty" hidden>No timetable yet. Tap "Edit timetable" to set it up.</p>
+    </section>
+
     <!-- ---------- NOTES ---------- -->
     <section class="panel" id="panel-notes" aria-labelledby="nt-heading">
       <header class="panel-head">
