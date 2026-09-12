@@ -544,7 +544,7 @@ button, input, textarea {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 30px;
+  padding: 20px;
   z-index: 100;
 }
 
@@ -552,36 +552,36 @@ button, input, textarea {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-m);
-  padding: 36px;
+  padding: 24px;
   width: 100%;
-  max-width: 630px;
+  max-width: 420px;
 }
 
 .tt-modal h3 {
   font-family: var(--font-display);
   font-weight: 500;
-  font-size: 30px;
-  margin: 0 0 6px;
+  font-size: 20px;
+  margin: 0 0 4px;
 }
 
 .tt-modal-sub {
   color: var(--text-muted);
-  font-size: 19.5px;
-  margin: 0 0 27px;
+  font-size: 13px;
+  margin: 0 0 18px;
 }
 
 .tt-modal form {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 10px;
 }
 
 .tt-modal input {
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: var(--radius-s);
-  padding: 16.5px 19.5px;
-  font-size: 21px;
+  padding: 11px 13px;
+  font-size: 14px;
 }
 
 .tt-modal input:focus {
@@ -591,26 +591,27 @@ button, input, textarea {
 .tt-modal-actions {
   display: flex;
   justify-content: space-between;
-  gap: 15px;
-  margin-top: 12px;
+  gap: 10px;
+  margin-top: 8px;
 }
 
 .tt-modal-actions .right {
   display: flex;
-  gap: 12px;
+  gap: 8px;
 }
 
 .btn-danger-text {
   background: transparent;
   border: none;
   color: var(--danger);
-  font-size: 19.5px;
+  font-size: 13px;
   cursor: pointer;
-  padding: 16.5px 6px;
+  padding: 11px 4px;
 }
 
 .btn-danger-text:hover {
   text-decoration: underline;
+}
 }/* ---------------------------------- Notes ---------------------------------- */
 
 .note-form {
