@@ -366,14 +366,12 @@ function renderTimetable() {
         const entry = ttData[key];
         td.className = "tt-slot" + (entry ? "" : " is-empty");
 
- if (entry) {
+        if (entry) {
   td.dataset.color = colorIndexFor(entry.subject || "");
   td.innerHTML = `
-    <div class="tt-slot-inner">
-      <div class="tt-subject">${escapeHtml(entry.subject || "")}</div>
-      <div class="tt-meta">${escapeHtml(entry.room || "")}</div>
-      <div class="tt-meta">${escapeHtml(entry.teacher || "")}</div>
-    </div>
+    <div class="tt-subject">${escapeHtml(entry.subject || "")}</div>
+    <div class="tt-meta">${escapeHtml(entry.room || "")}</div>
+    <div class="tt-meta">${escapeHtml(entry.teacher || "")}</div>
   `;
 }
         if (ttEditing) {
