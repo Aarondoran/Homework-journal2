@@ -494,6 +494,7 @@ button, input, textarea {
 .tt-slot {
   padding: 8px 4px;
   min-height: 60px;
+  height: 60px;
   transition: background 0.12s ease;
 }
 .tt-slot:hover {
