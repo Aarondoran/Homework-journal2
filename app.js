@@ -370,8 +370,8 @@ function renderTimetable() {
   td.dataset.color = colorIndexFor(entry.subject || "");
   td.innerHTML = `
     <div class="tt-subject">${escapeHtml(entry.subject || "")}</div>
-    ${entry.room ? `<div class="tt-meta">${escapeHtml(entry.room)}</div>` : ""}
-    ${entry.teacher ? `<div class="tt-meta">${escapeHtml(entry.teacher)}</div>` : ""}
+    <div class="tt-meta">${escapeHtml(entry.room || "")}</div>
+    <div class="tt-meta">${escapeHtml(entry.teacher || "")}</div>
   `;
 }
         if (ttEditing) {
