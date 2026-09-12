@@ -17,9 +17,10 @@ import {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
+
 const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({ prompt: "select_account" });
-const db = getFirestore(app);
 
 // ---------------------------------------------------------------- elements
 const gate = document.getElementById("gate");
@@ -34,8 +35,10 @@ let unsubNotes = null;
 document.getElementById("emailForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   gateError.hidden = true;
+
   const email = document.getElementById("emailInput").value.trim();
   const pass = document.getElementById("passInput").value;
+
   try {
     await signInWithEmailAndPassword(auth, email, pass);
   } catch (err) {
@@ -43,29 +46,73 @@ document.getElementById("emailForm").addEventListener("submit", async (e) => {
   }
 });
 
+document.getElementById("googleSignInBtn")?.addEventListener("click", async () => {
+  gateError.hidden = true;
+  try {
+    await signInWithRedirect(auth, googleProvider);
+  } catch (err) {
+    showGateError(err);
+  }
+});
+
+// IMPORTANT: this does not unlock app itself.
+// It only surfaces redirect errors; successful auth is handled by onAuthStateChanged.
+getRedirectResult(auth).catch((err) => {
+  showGateError(err);
+});
 
 document.getElementById("signOutBtn").addEventListener("click", () => signOut(auth));
 
 function showGateError(err) {
-  gateError.textContent = humanizeAuthError(err.code) || "Something went wrong. Try again.";
+  gateError.textContent = humanizeAuthError(err?.code) || "Sign-in failed. Please try again.";
   gateError.hidden = false;
 }
 
 function humanizeAuthError(code) {
   const map = {
     "auth/wrong-password": "That password doesn't match.",
-    "auth/user-not-found": "No account with that email yet — tap Create account.",
-    "auth/email-already-in-use": "An account with that email already exists — sign in instead.",
-    "auth/weak-password": "Use at least 6 characters.",
+    "auth/user-not-found": "No account found for that email.",
+    "auth/invalid-credential": "Incorrect email or password.",
     "auth/invalid-email": "That email doesn't look right.",
+    "auth/user-disabled": "This account has been disabled.",
+    "auth/too-many-requests": "Too many attempts. Please try again later.",
+    "auth/account-exists-with-different-credential": "This email is already linked to a different sign-in method.",
+    "auth/operation-not-allowed": "Google sign-in is not enabled in Firebase.",
+    "auth/unauthorized-domain": "This domain is not authorized for sign-in.",
     "auth/popup-closed-by-user": "Sign-in was canceled.",
-    "auth/cancelled-popup-request": "Sign-in request canceled. Please try again.",
-    "auth/account-exists-with-different-credential": "An account already exists with this email using a different sign-in method.",
-    "auth/operation-not-allowed": "Google sign-in is not enabled in Firebase Auth settings.",
-    "auth/unauthorized-domain": "This domain is not authorized for Firebase Auth."
+    "auth/cancelled-popup-request": "Sign-in was canceled.",
   };
   return map[code];
 }
+
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    gate.hidden = false;
+    appShell.hidden = true;
+    gateLocked.hidden = true;
+    currentUid = null;
+    if (unsubHw) unsubHw();
+    if (unsubNotes) unsubNotes();
+    return;
+  }
+
+  const ownerConfigured = OWNER_UID && OWNER_UID !== "PASTE_YOUR_UID_HERE";
+
+  if (ownerConfigured && user.uid !== OWNER_UID) {
+    gate.hidden = false;
+    appShell.hidden = true;
+    gateLocked.hidden = false;
+    signOut(auth);
+    return;
+  }
+
+  gate.hidden = true;
+  gateLocked.hidden = true;
+  appShell.hidden = false;
+  document.getElementById("userEmail").textContent = user.email || "";
+  loadStaticTimetable();
+  startSync(user.uid);
+});
 
 document.getElementById("googleSignInBtn").addEventListener("click", async () => {
   gateError.hidden = true;
