@@ -67,6 +67,8 @@ function humanizeAuthError(code) {
     "auth/unauthorized-domain": "This domain is not authorized for sign-in.",
     "auth/popup-closed-by-user": "Sign-in was canceled.",
     "auth/cancelled-popup-request": "Sign-in was canceled.",
+    "auth/credential-already-in-use": "That Google account is already linked to a different account.",
+    "auth/provider-already-linked": "Your account is already linked to Google.",
   };
   return map[code];
 }
@@ -126,6 +128,14 @@ getRedirectResult(auth)
     }
   })
   .catch((err) => {
+    if (err?.code === "auth/account-exists-with-different-credential") {
+      const email = err?.customData?.email || "";
+      const emailInput = document.getElementById("emailInput");
+      if (email && emailInput) emailInput.value = email;
+      gateError.textContent = "An account already exists for this email. Sign in with your password below, then use \"Link my Google\" to connect your Google account.";
+      gateError.hidden = false;
+      return;
+    }
     showGateError(err);
   });
 
