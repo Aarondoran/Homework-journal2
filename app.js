@@ -92,6 +92,7 @@ onAuthStateChanged(auth, (user) => {
 
   gate.hidden = true;
   appShell.hidden = false;
+  currentUid = user.uid;
   document.getElementById("userEmail").textContent = user.email || "";
   startSync(user.uid);
   startTimetableSync(user.uid);   // ← semicolon
@@ -524,7 +525,6 @@ function startTimetableSync(uid) {
 
 // -------------------- Sync --------------------
 function startSync(uid) {
-  currentUid = uid;
   if (unsubHw) unsubHw();
   if (unsubNotes) unsubNotes();
 
@@ -597,7 +597,6 @@ if (signOutBtn) {
       setStatus(hwStatus, humanizeAuthError(err?.code) || "Sign out failed.", true);
     });
   });
-  if (unsubTimetable) unsubTimetable();
 }
 
 // -------------------- PWA --------------------
