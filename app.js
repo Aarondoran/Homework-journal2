@@ -33,11 +33,12 @@ const noteEmpty = document.getElementById("noteEmpty");
 const noteStatus = document.getElementById("noteStatus");
 const exportBtn = document.getElementById("exportBtn");
 const signOutBtn = document.getElementById("signOutBtn");
+const userEmailEl = document.getElementById("userEmail");
 
 let currentUid = null;
 let unsubHw = null;
 let unsubNotes = null;
-let unsubTimetable = null;   // ← move it here
+let unsubTimetable = null;
 
 // -------------------- Auth helpers --------------------
 function showGateError(err) {
@@ -70,7 +71,7 @@ if (emailForm) {
     const pass = document.getElementById("passInput").value;
     try {
       await signInWithEmailAndPassword(auth, email, pass);
-      // onAuthStateChanged will handle UI
+      // onAuthStateChanged handles the UI swap
     } catch (err) {
       showGateError(err);
     }
@@ -83,19 +84,20 @@ onAuthStateChanged(auth, (user) => {
     gate.hidden = false;
     appShell.hidden = true;
     currentUid = null;
-    if (unsubHw) unsubHw();
-    if (unsubNotes) unsubNotes();
-    if (unsubTimetable) unsubTimetable();   // ← add this
+    if (unsubHw) { unsubHw(); unsubHw = null; }
+    if (unsubNotes) { unsubNotes(); unsubNotes = null; }
+    if (unsubTimetable) { unsubTimetable(); unsubTimetable = null; }
     return;
   }
 
   gate.hidden = true;
   appShell.hidden = false;
   currentUid = user.uid;
-  document.getElementById("userEmail").textContent = user.email || "";
+  if (userEmailEl) userEmailEl.textContent = user.email || "";
   startSync(user.uid);
-  startTimetableSync(user.uid);   // ← semicolon
+  startTimetableSync(user.uid);
 });
+
 // -------------------- Navigation --------------------
 if (railNav) {
   railNav.addEventListener("click", (e) => {
@@ -104,7 +106,8 @@ if (railNav) {
     document.querySelectorAll(".rail-link").forEach((b) => b.classList.remove("is-active"));
     document.querySelectorAll(".panel").forEach((p) => p.classList.remove("is-active"));
     btn.classList.add("is-active");
-    document.getElementById(`panel-${btn.dataset.panel}`).classList.add("is-active");
+    const panel = document.getElementById(`panel-${btn.dataset.panel}`);
+    if (panel) panel.classList.add("is-active");
   });
 }
 
@@ -314,7 +317,6 @@ function renderTimetable() {
   if (!ttGrid) return;
   ttGrid.innerHTML = "";
 
-  // Header row
   const thead = document.createElement("thead");
   const headRow = document.createElement("tr");
   headRow.appendChild(document.createElement("th"));
@@ -326,12 +328,10 @@ function renderTimetable() {
   thead.appendChild(headRow);
   ttGrid.appendChild(thead);
 
-  // Body rows
   const tbody = document.createElement("tbody");
   PERIODS.forEach((p) => {
     const tr = document.createElement("tr");
 
-    // Time cell
     const timeCell = document.createElement("td");
     timeCell.className = "tt-time";
     timeCell.textContent = p.type === "tutor" ? "" : `${p.start} – ${p.end}`;
@@ -393,7 +393,7 @@ function renderTimetable() {
 
   const hasAny = Object.keys(ttData).length > 0;
   if (ttEmpty) ttEmpty.hidden = hasAny || ttEditing;
-  if (ttGrid) ttGrid.classList.toggle("is-editing", ttEditing);
+  ttGrid.classList.toggle("is-editing", ttEditing);
 }
 
 function openSlotModal(dayId, periodId, key) {
@@ -522,7 +522,7 @@ function startTimetableSync(uid) {
   );
 }
 
-// -------------------- Sync --------------------
+// -------------------- Sync (homework + notes) --------------------
 function startSync(uid) {
   if (unsubHw) unsubHw();
   if (unsubNotes) unsubNotes();
@@ -532,9 +532,7 @@ function startSync(uid) {
     (snap) => {
       renderHomework(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
     },
-    (err) => {
-      setStatus(hwStatus, humanizeFirestoreError(err), true);
-    }
+    (err) => setStatus(hwStatus, humanizeFirestoreError(err), true)
   );
 
   unsubNotes = onSnapshot(
@@ -542,9 +540,7 @@ function startSync(uid) {
     (snap) => {
       renderNotes(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
     },
-    (err) => {
-      setStatus(noteStatus, humanizeFirestoreError(err), true);
-    }
+    (err) => setStatus(noteStatus, humanizeFirestoreError(err), true)
   );
 }
 
