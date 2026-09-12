@@ -204,6 +204,30 @@ button, input, textarea {
     width: 100%;
   }
 }
+/* Legal text under sign-in */
+.gate-legal {
+  margin: 8px 0 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--text-faint);
+  max-width: 38ch;
+}
+
+.gate-legal a {
+  color: var(--text-muted);
+  text-decoration-color: var(--border);
+  text-underline-offset: 2px;
+}
+
+.gate-legal a:visited {
+  color: var(--text-muted); /* prevent default purple visited links */
+}
+
+.gate-legal a:hover,
+.gate-legal a:focus-visible {
+  color: var(--accent);
+  text-decoration-color: currentColor;
+}
 
 /* ---------------------------------- App shell ---------------------------------- */
 
