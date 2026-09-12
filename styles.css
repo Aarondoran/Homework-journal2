@@ -1,3 +1,13 @@
+/* ==========================================================================
+   Study Deck — design tokens
+   Background: #0F1115 (ink)   Surface: #171A21   Border: #262B35
+   Text: #E8E6E1 (warm off-white)   Muted: #8B8F98
+   Accent: #4FB0A5 (teal, active/done)   Warn: #E0A458 (amber, due soon/overdue)
+   Display type: Fraunces (serif, personality) — Body/UI: Inter (sans)
+   ========================================================================== */
+html, body {
+    overscroll-behavior: none;
+}
 [hidden] {
   display: none !important;
 }
@@ -34,7 +44,6 @@ html, body {
   color: var(--text);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
-  overscroll-behavior: none;
 }
 
 button, input, textarea {
@@ -171,7 +180,33 @@ button, input, textarea {
   border-radius: 3px;
 }
 
+/* Google sign-in button (inherits your .btn .btn-ghost styles) */
+#googleSignInBtn {
+  width: 100%;
+  margin-top: 2px;
+  justify-content: center;
+  position: relative;
+}
 
+/* Google "G" icon (inline SVG) */
+#googleSignInBtn::before {
+  content: "";
+  width: 18px;
+  height: 18px;
+  display: inline-block;
+  margin-right: 8px;
+  flex-shrink: 0;
+  background-repeat: no-repeat;
+  background-size: 18px 18px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%23FFC107' d='M43.611 20.083H42V20H24v8h11.303C33.654 32.657 29.249 36 24 36c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.27 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z'/%3E%3Cpath fill='%23FF3D00' d='M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.27 4 24 4c-7.682 0-14.347 4.337-17.694 10.691z'/%3E%3Cpath fill='%234CAF50' d='M24 44c5.167 0 9.86-1.977 13.409-5.197l-6.191-5.238C29.144 35.091 26.671 36 24 36c-5.228 0-9.625-3.329-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z'/%3E%3Cpath fill='%231976D2' d='M43.611 20.083H42V20H24v8h11.303a12.047 12.047 0 0 1-4.085 5.565h.003l6.191 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z'/%3E%3C/svg%3E");
+}
+
+/* keep icon/text nicely centered at smaller widths */
+@media (max-width: 900px) {
+  #googleSignInBtn {
+    width: 100%;
+  }
+}
 /* Legal text under sign-in */
 .gate-legal {
   margin: 8px 0 0;
@@ -282,15 +317,6 @@ button, input, textarea {
 }
 
 /* ---------------------------------- Stage / panels ---------------------------------- */
-
-.status-text {
-  font-size: 12.5px;
-  color: var(--text-faint);
-  min-height: 18px;
-  margin: 10px 0 0;
-}
-.status-text.is-error { color: var(--danger); }
-.status-text.is-success { color: var(--accent); }
 
 .stage {
   padding: 44px 56px 60px;
@@ -470,9 +496,8 @@ button, input, textarea {
 }
 
 .tt-slot {
-  padding: 0;
-  vertical-align: middle;
-  text-align: center;
+  padding: 24px 6px;
+  min-height: 138px;
   transition: background 0.12s ease;
 }
 
@@ -484,31 +509,19 @@ button, input, textarea {
   color: var(--text-faint);
   font-style: italic;
   font-size: 13.5px;
-  padding: 12px 6px;
 }
 
-.tt-slot-inner {
-  min-height: 138px;
-  padding: 12px 6px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
-  align-items: center;
-  text-align: center;
-}
 .tt-subject {
   font-weight: 600;
   font-size: 15px;
   color: var(--text);
   line-height: 1.15;
-  text-align: center;
 }
 
 .tt-meta {
   font-size: 13.5px;
   color: var(--text-muted);
   line-height: 1.15;
-  text-align: center;
 }
 
 .tt-slot[data-color="0"] { background: rgba(79,176,165,0.14); }
@@ -524,7 +537,7 @@ button, input, textarea {
   cursor: pointer;
 }
 
-/* ---- Modal (slightly bigger) ---- */
+/* ---- Modal (original small sizes) ---- */
 
 .tt-modal-backdrop {
   position: fixed;
@@ -541,36 +554,36 @@ button, input, textarea {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-m);
-  padding: 22px;
+  padding: 18px;
   width: 100%;
-  max-width: 400px;
+  max-width: 340px;
 }
 
 .tt-modal h3 {
   font-family: var(--font-display);
   font-weight: 500;
-  font-size: 18px;
-  margin: 0 0 4px;
+  font-size: 15px;
+  margin: 0 0 3px;
 }
 
 .tt-modal-sub {
   color: var(--text-muted);
-  font-size: 12.5px;
-  margin: 0 0 15px;
+  font-size: 11px;
+  margin: 0 0 12px;
 }
 
 .tt-modal form {
   display: flex;
   flex-direction: column;
-  gap: 9px;
+  gap: 7px;
 }
 
 .tt-modal input {
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: var(--radius-s);
-  padding: 10px 12px;
-  font-size: 13px;
+  padding: 8px 10px;
+  font-size: 12px;
 }
 
 .tt-modal input:focus {
@@ -580,28 +593,28 @@ button, input, textarea {
 .tt-modal-actions {
   display: flex;
   justify-content: space-between;
-  gap: 9px;
-  margin-top: 7px;
+  gap: 8px;
+  margin-top: 6px;
 }
 
 .tt-modal-actions .right {
   display: flex;
-  gap: 7px;
+  gap: 6px;
 }
 
 .btn-danger-text {
   background: transparent;
   border: none;
   color: var(--danger);
-  font-size: 12px;
+  font-size: 11px;
   cursor: pointer;
-  padding: 9px 3px;
+  padding: 8px 3px;
 }
 
 .btn-danger-text:hover {
   text-decoration: underline;
 }
-/* ---------------------------------- Notes ---------------------------------- */
+}/* ---------------------------------- Notes ---------------------------------- */
 
 .note-form {
   display: flex;
