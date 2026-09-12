@@ -1,6 +1,4 @@
-// app.js — single-file replacement (redirect-only Google flows)
-
-import { firebaseConfig, OWNER_UID } from "./firebase-config.js";
+import { firebaseConfig } from "./firebase-config.js";
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
 import {
@@ -31,7 +29,6 @@ googleProvider.setCustomParameters({ prompt: "select_account" });
 const gate = document.getElementById("gate");
 const appShell = document.getElementById("app");
 const gateError = document.getElementById("gateError");
-const gateLocked = document.getElementById("gateLocked");
 const railNav = document.getElementById("railNav");
 const hwForm = document.getElementById("hwForm");
 const hwGroups = document.getElementById("hwGroups");
@@ -46,6 +43,7 @@ const ttPlaceholder = document.getElementById("ttPlaceholder");
 const ttStatus = document.getElementById("ttStatus");
 const exportBtn = document.getElementById("exportBtn");
 const linkBtn = document.getElementById("linkGoogleBtn");
+const signOutBtn = document.getElementById("signOutBtn");
 let currentUid = null;
 let unsubHw = null;
 let unsubNotes = null;
@@ -136,7 +134,6 @@ onAuthStateChanged(auth, (user) => {
   if (!user) {
     gate.hidden = false;
     appShell.hidden = true;
-    gateLocked.hidden = true;
     currentUid = null;
     if (unsubHw) unsubHw();
     if (unsubNotes) unsubNotes();
@@ -144,7 +141,6 @@ onAuthStateChanged(auth, (user) => {
   }
 
   gate.hidden = true;
-  gateLocked.hidden = true;
   appShell.hidden = false;
   document.getElementById("userEmail").textContent = user.email || "";
   loadStaticTimetable();
@@ -163,7 +159,7 @@ if (railNav) {
   });
 }
 
-// -------------------- Homework (unchanged behavior) --------------------
+// -------------------- Homework --------------------
 if (hwForm) {
   hwForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -422,6 +418,15 @@ if (linkBtn) {
       setStatus(hwStatus, humanizeAuthError(err?.code) || "Error starting linking redirect.", true);
       console.error("Error starting linkWithRedirect:", err);
     }
+  });
+}
+
+// -------------------- Sign out --------------------
+if (signOutBtn) {
+  signOutBtn.addEventListener("click", () => {
+    signOut(auth).catch((err) => {
+      setStatus(hwStatus, humanizeAuthError(err?.code) || "Sign out failed.", true);
+    });
   });
 }
 
