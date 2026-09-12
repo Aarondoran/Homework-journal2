@@ -462,7 +462,7 @@ button, input, textarea {
 }
 
 .tt-grid thead th:first-child {
-  width: 140px;
+  min-width: 100px;
 }
 
 .tt-grid .tt-time {
@@ -472,7 +472,7 @@ button, input, textarea {
   font-weight: 500;
   padding: 18px 14px;
   white-space: nowrap;
-  width: 140px;
+  min-width: 100px;
   text-align: center;
   vertical-align: middle;
 }
@@ -497,8 +497,8 @@ button, input, textarea {
 
 .tt-slot {
   padding: 14px 14px;
-  min-height: 100px;
-  height: 100px;
+  min-height: 50px
+  max-height: 75px
   transition: background 0.12s ease;
 }
 .tt-slot:hover {
