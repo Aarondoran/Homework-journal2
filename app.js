@@ -31,14 +31,14 @@ const noteForm = document.getElementById("noteForm");
 const noteGrid = document.getElementById("noteGrid");
 const noteEmpty = document.getElementById("noteEmpty");
 const noteStatus = document.getElementById("noteStatus");
-const ttImage = document.getElementById("ttImage");
-const ttPlaceholder = document.getElementById("ttPlaceholder");
 const ttStatus = document.getElementById("ttStatus");
 const exportBtn = document.getElementById("exportBtn");
 const signOutBtn = document.getElementById("signOutBtn");
+
 let currentUid = null;
 let unsubHw = null;
 let unsubNotes = null;
+let unsubTimetable = null;   // ← move it here
 
 // -------------------- Auth helpers --------------------
 function showGateError(err) {
@@ -86,17 +86,16 @@ onAuthStateChanged(auth, (user) => {
     currentUid = null;
     if (unsubHw) unsubHw();
     if (unsubNotes) unsubNotes();
+    if (unsubTimetable) unsubTimetable();   // ← add this
     return;
   }
-  
+
   gate.hidden = true;
   appShell.hidden = false;
   document.getElementById("userEmail").textContent = user.email || "";
-  loadStaticTimetable();
   startSync(user.uid);
-  startTimetableSync(user.uid)
+  startTimetableSync(user.uid);   // ← semicolon
 });
-
 // -------------------- Navigation --------------------
 if (railNav) {
   railNav.addEventListener("click", (e) => {
@@ -293,7 +292,6 @@ function slotExists(periodId, dayId) {
 
 let ttData = {};        // { "mon|p1": { subject, room, teacher }, ... }
 let ttEditing = false;
-let unsubTimetable = null;
 
 const ttGrid = document.getElementById("ttGrid");
 const ttStatus = document.getElementById("ttStatus");
@@ -523,6 +521,7 @@ function startTimetableSync(uid) {
     (err) => setStatus(ttStatus, humanizeFirestoreError(err), true)
   );
 }
+
 // -------------------- Sync --------------------
 function startSync(uid) {
   currentUid = uid;
