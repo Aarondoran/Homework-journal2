@@ -1,12 +1,3 @@
-/* ==========================================================================
-   Study Deck — design tokens
-   Background: #0F1115 (ink)   Surface: #171A21   Border: #262B35
-   Text: #E8E6E1 (warm off-white)   Muted: #8B8F98
-   Accent: #4FB0A5 (teal, active/done)   Warn: #E0A458 (amber, due soon/overdue)
-   Display type: Fraunces (serif, personality) — Body/UI: Inter (sans)
-   ========================================================================== */
-html, body {
-    overscroll-behavior: none;
 }
 [hidden] {
   display: none !important;
@@ -44,6 +35,7 @@ html, body {
   color: var(--text);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
 }
 
 button, input, textarea {
@@ -181,7 +173,6 @@ button, input, textarea {
 }
 
 
-}
 /* Legal text under sign-in */
 .gate-legal {
   margin: 8px 0 0;
@@ -598,7 +589,7 @@ button, input, textarea {
 .btn-danger-text:hover {
   text-decoration: underline;
 }
-}/* ---------------------------------- Notes ---------------------------------- */
+/* ---------------------------------- Notes ---------------------------------- */
 
 .note-form {
   display: flex;
