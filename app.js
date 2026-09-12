@@ -6,10 +6,6 @@ import {
   signInWithEmailAndPassword,
   onAuthStateChanged,
   signOut,
-  GoogleAuthProvider,
-  signInWithRedirect,
-  getRedirectResult,
-  linkWithRedirect,
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 
 import {
@@ -21,9 +17,6 @@ import {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-
-const googleProvider = new GoogleAuthProvider();
-googleProvider.setCustomParameters({ prompt: "select_account" });
 
 // -------------------- DOM elements --------------------
 const gate = document.getElementById("gate");
@@ -42,7 +35,6 @@ const ttImage = document.getElementById("ttImage");
 const ttPlaceholder = document.getElementById("ttPlaceholder");
 const ttStatus = document.getElementById("ttStatus");
 const exportBtn = document.getElementById("exportBtn");
-const linkBtn = document.getElementById("linkGoogleBtn");
 const signOutBtn = document.getElementById("signOutBtn");
 let currentUid = null;
 let unsubHw = null;
@@ -62,13 +54,9 @@ function humanizeAuthError(code) {
     "auth/invalid-email": "That email doesn't look right.",
     "auth/user-disabled": "This account has been disabled.",
     "auth/too-many-requests": "Too many attempts. Please try again later.",
-    "auth/account-exists-with-different-credential": "This email is linked to a different sign-in method.",
-    "auth/operation-not-allowed": "Google sign-in is not enabled in Firebase.",
     "auth/unauthorized-domain": "This domain is not authorized for sign-in.",
     "auth/popup-closed-by-user": "Sign-in was canceled.",
     "auth/cancelled-popup-request": "Sign-in was canceled.",
-    "auth/credential-already-in-use": "That Google account is already linked to a different account.",
-    "auth/provider-already-linked": "Your account is already linked to Google.",
   };
   return map[code];
 }
@@ -89,75 +77,6 @@ if (emailForm) {
     }
   });
 }
-
-// -------------------- Google sign-in (redirect) --------------------
-const googleSignInBtn = document.getElementById("googleSignInBtn");
-if (googleSignInBtn) {
-  googleSignInBtn.addEventListener("click", async () => {
-    gateError.hidden = true;
-    sessionStorage.setItem("googleSignInPending", "1");
-    try {
-      await signInWithRedirect(auth, googleProvider);
-      // The redirect will take place; getRedirectResult will be processed on page load after redirect returns.
-    } catch (err) {
-      sessionStorage.removeItem("googleSignInPending");
-      showGateError(err);
-    }
-  });
-}
-
-// -------------------- Handle redirect results --------------------
-// Process both sign-in redirects and linking redirects here.
-// If linking was started we store the pre-link email in sessionStorage under 'linkingEmail'.
-getRedirectResult(auth)
-  .then((result) => {
-    const linkingEmail = sessionStorage.getItem("linkingEmail");
-    const signInPending = sessionStorage.getItem("googleSignInPending");
-
-    if (!result) {
-      // No redirect result came back, even though we were expecting one.
-      // This is almost always a Firebase configuration issue, not a code
-      // issue: either this domain isn't in Firebase Console -> Authentication
-      // -> Settings -> Authorized domains, or the browser is blocking the
-      // storage/cookies the redirect flow needs to complete.
-      if (linkingEmail) {
-        setStatus(hwStatus, "Google linking didn't complete. This domain may not be authorized in Firebase, or the browser blocked the sign-in storage.", true);
-      } else if (signInPending) {
-        gateError.textContent = "Google sign-in didn't complete. This domain may not be authorized in Firebase, or the browser blocked the sign-in storage. Please try again or use email/password.";
-        gateError.hidden = false;
-      }
-      sessionStorage.removeItem("linkingEmail");
-      sessionStorage.removeItem("googleSignInPending");
-      return;
-    }
-
-    sessionStorage.removeItem("googleSignInPending");
-    const credential = GoogleAuthProvider.credentialFromResult(result);
-    const resultEmail = result?.user?.email;
-    if (linkingEmail) {
-      if (!credential) {
-        setStatus(hwStatus, "Google linking didn't return a valid credential. Please try again.", true);
-      } else if (resultEmail && linkingEmail.toLowerCase() !== resultEmail.toLowerCase()) {
-        setStatus(hwStatus, "Linked Google account email doesn't match signed-in account.", true);
-      } else {
-        setStatus(hwStatus, "Google account linked.");
-      }
-      sessionStorage.removeItem("linkingEmail");
-    }
-  })
-  .catch((err) => {
-    sessionStorage.removeItem("googleSignInPending");
-    sessionStorage.removeItem("linkingEmail");
-    if (err?.code === "auth/account-exists-with-different-credential") {
-      const email = err?.customData?.email || "";
-      const emailInput = document.getElementById("emailInput");
-      if (email && emailInput) emailInput.value = email;
-      gateError.textContent = "An account already exists for this email. Sign in with your password below, then use \"Link my Google\" to connect your Google account.";
-      gateError.hidden = false;
-      return;
-    }
-    showGateError(err);
-  });
 
 // -------------------- onAuthStateChanged --------------------
 onAuthStateChanged(auth, (user) => {
@@ -425,29 +344,6 @@ if (exportBtn) {
     a.download = `study-deck-backup-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(a.href);
-  });
-}
-
-// -------------------- Link Google (redirect-only) --------------------
-if (linkBtn) {
-  linkBtn.addEventListener("click", async () => {
-    if (!auth.currentUser) {
-      setStatus(hwStatus, "Sign in first to link accounts.", true);
-      return;
-    }
-
-    // Store the current signed-in email so we can verify it after the redirect returns.
-    const currentEmail = auth.currentUser.email || "";
-    sessionStorage.setItem("linkingEmail", currentEmail);
-
-    try {
-      await linkWithRedirect(auth.currentUser, googleProvider);
-      // The redirect will happen and the result will be processed by getRedirectResult on page load.
-    } catch (err) {
-      sessionStorage.removeItem("linkingEmail");
-      setStatus(hwStatus, humanizeAuthError(err?.code) || "Error starting linking redirect.", true);
-      console.error("Error starting linkWithRedirect:", err);
-    }
   });
 }
 
