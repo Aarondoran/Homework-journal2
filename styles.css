@@ -424,8 +424,8 @@ button, input, textarea {
 .tt-toolbar {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 10px;
+  gap: 12px;
+  margin-bottom: 15px;
 }
 
 .tt-grid-wrap {
@@ -435,9 +435,8 @@ button, input, textarea {
 
 .tt-grid {
   width: 100%;
-  height: 100%
   border-collapse: collapse;
-  font-size: 10px;
+  font-size: 15px;
   table-layout: fixed;
 }
 
@@ -455,21 +454,21 @@ button, input, textarea {
   background: var(--surface-raised);
   color: var(--text);
   font-weight: 600;
-  font-size: 10px;
-  padding: 4px 3px;
+  font-size: 15px;
+  padding: 6px 4.5px;
   text-align: center;
 }
 
 .tt-grid thead th:first-child {
-  width: 74px;
+  width: 111px;
 }
 
 .tt-grid .tt-time {
   background: var(--surface-raised);
   color: var(--text-muted);
-  font-size: 9px;
+  font-size: 13.5px;
   font-weight: 500;
-  padding: 8px 3px;
+  padding: 12px 4.5px;
   text-align: center;
   vertical-align: middle;
   line-height: 1.15;
@@ -478,8 +477,8 @@ button, input, textarea {
 .tt-grid .tt-tutor td {
   background: #3A3320;
   color: var(--text);
-  font-size: 10px;
-  padding: 8px 3px;
+  font-size: 15px;
+  padding: 12px 4.5px;
   text-align: center;
   font-weight: 500;
 }
@@ -487,17 +486,18 @@ button, input, textarea {
 .tt-grid .tt-break td {
   background: var(--bg);
   color: var(--text-faint);
-  font-size: 9px;
-  padding: 6px 3px;
+  font-size: 13.5px;
+  padding: 9px 4.5px;
   text-align: center;
   font-style: italic;
 }
+
 .tt-slot {
-  padding: 8px 4px;
-  min-height: 60px;
-  height: 60px;
+  padding: 12px 6px;
+  min-height: 69px;
   transition: background 0.12s ease;
 }
+
 .tt-slot:hover {
   background: var(--surface-raised);
 }
@@ -505,7 +505,7 @@ button, input, textarea {
 .tt-slot.is-empty {
   color: var(--text-faint);
   font-style: italic;
-  font-size: 9px;
+  font-size: 13.5px;
 }
 
 .tt-subject {
@@ -516,7 +516,7 @@ button, input, textarea {
 }
 
 .tt-meta {
-  font-size: 12px;
+  font-size: 13.5px;
   color: var(--text-muted);
   line-height: 1.15;
 }
@@ -529,8 +529,8 @@ button, input, textarea {
 .tt-slot[data-color="5"] { background: rgba(140,190,140,0.14); }
 
 .tt-grid.is-editing .tt-slot {
-  outline: 1px dashed var(--accent);
-  outline-offset: -2px;
+  outline: 1.5px dashed var(--accent);
+  outline-offset: -3px;
   cursor: pointer;
 }
 
@@ -541,7 +541,7 @@ button, input, textarea {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 30px;
   z-index: 100;
 }
 
@@ -549,36 +549,36 @@ button, input, textarea {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-m);
-  padding: 24px;
+  padding: 36px;
   width: 100%;
-  max-width: 420px;
+  max-width: 630px;
 }
 
 .tt-modal h3 {
   font-family: var(--font-display);
   font-weight: 500;
-  font-size: 20px;
-  margin: 0 0 4px;
+  font-size: 30px;
+  margin: 0 0 6px;
 }
 
 .tt-modal-sub {
   color: var(--text-muted);
-  font-size: 13px;
-  margin: 0 0 18px;
+  font-size: 19.5px;
+  margin: 0 0 27px;
 }
 
 .tt-modal form {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 15px;
 }
 
 .tt-modal input {
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: var(--radius-s);
-  padding: 11px 13px;
-  font-size: 14px;
+  padding: 16.5px 19.5px;
+  font-size: 21px;
 }
 
 .tt-modal input:focus {
@@ -588,22 +588,22 @@ button, input, textarea {
 .tt-modal-actions {
   display: flex;
   justify-content: space-between;
-  gap: 10px;
-  margin-top: 8px;
+  gap: 15px;
+  margin-top: 12px;
 }
 
 .tt-modal-actions .right {
   display: flex;
-  gap: 8px;
+  gap: 12px;
 }
 
 .btn-danger-text {
   background: transparent;
   border: none;
   color: var(--danger);
-  font-size: 13px;
+  font-size: 19.5px;
   cursor: pointer;
-  padding: 11px 4px;
+  padding: 16.5px 6px;
 }
 
 .btn-danger-text:hover {
