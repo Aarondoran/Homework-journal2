@@ -421,37 +421,6 @@ button, input, textarea {
 
 /* ---------------------------------- Timetable ---------------------------------- */
 
-.tt-frame {
-  border: 1px solid var(--border);
-  background: var(--surface);
-  border-radius: var(--radius-m);
-  padding: 14px;
-  margin-bottom: 18px;
-  min-height: 260px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.tt-frame img { width: 100%; border-radius: var(--radius-s); display: block; }
-
-.tt-placeholder { color: var(--text-faint); font-size: 14px; }
-
-.tt-upload-btn { cursor: pointer; }
-
-.tt-status { font-size: 12.5px; color: var(--text-faint); margin-top: 10px; }
-
-.status-text {
-  font-size: 12.5px;
-  color: var(--text-faint);
-  min-height: 18px;
-  margin: 10px 2px 0;
-}
-.status-text.is-error { color: var(--danger); }
-.status-text.is-success { color: var(--accent); }
-
-/* ---------------------------------- Timetable ---------------------------------- */
-
 .tt-toolbar {
   display: flex;
   align-items: center;
@@ -469,8 +438,9 @@ button, input, textarea {
 .tt-grid {
   width: 100%;
   border-collapse: collapse;
-  font-size: 13px;
-  min-width: 720px;
+  font-size: 15px;
+  min-width: 960px;
+  table-layout: fixed;
 }
 
 .tt-grid th,
@@ -485,22 +455,24 @@ button, input, textarea {
   background: var(--surface-raised);
   color: var(--text);
   font-weight: 600;
-  font-size: 12px;
+  font-size: 14px;
   letter-spacing: 0.02em;
-  padding: 10px 12px;
+  padding: 16px 14px;
   text-align: center;
-  position: sticky;
-  top: 0;
+}
+
+.tt-grid thead th:first-child {
+  width: 140px;
 }
 
 .tt-grid .tt-time {
   background: var(--surface-raised);
   color: var(--text-muted);
-  font-size: 11.5px;
+  font-size: 13px;
   font-weight: 500;
-  padding: 10px 12px;
+  padding: 18px 14px;
   white-space: nowrap;
-  width: 110px;
+  width: 140px;
   text-align: center;
   vertical-align: middle;
 }
@@ -508,8 +480,8 @@ button, input, textarea {
 .tt-grid .tt-tutor td {
   background: #3A3320;
   color: var(--text);
-  font-size: 12px;
-  padding: 8px 12px;
+  font-size: 14px;
+  padding: 14px;
   text-align: center;
   font-weight: 500;
 }
@@ -517,16 +489,16 @@ button, input, textarea {
 .tt-grid .tt-break td {
   background: var(--bg);
   color: var(--text-faint);
-  font-size: 11.5px;
-  padding: 6px 12px;
+  font-size: 13px;
+  padding: 12px 14px;
   text-align: center;
   font-style: italic;
 }
 
 .tt-slot {
-  padding: 8px 10px;
-  min-height: 62px;
-  cursor: pointer;
+  padding: 14px 14px;
+  min-height: 100px;
+  height: 100px;
   transition: background 0.12s ease;
 }
 .tt-slot:hover {
@@ -536,23 +508,23 @@ button, input, textarea {
 .tt-slot.is-empty {
   color: var(--text-faint);
   font-style: italic;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .tt-subject {
   font-weight: 600;
-  font-size: 13px;
+  font-size: 15px;
   color: var(--text);
-  margin-bottom: 3px;
+  margin-bottom: 6px;
+  line-height: 1.25;
 }
 
 .tt-meta {
-  font-size: 11.5px;
+  font-size: 13px;
   color: var(--text-muted);
-  line-height: 1.4;
+  line-height: 1.5;
 }
 
-/* Colour accents per subject (deterministic by name) */
 .tt-slot[data-color="0"] { background: rgba(79,176,165,0.14); }
 .tt-slot[data-color="1"] { background: rgba(224,164,88,0.14); }
 .tt-slot[data-color="2"] { background: rgba(201,115,97,0.14); }
@@ -560,22 +532,12 @@ button, input, textarea {
 .tt-slot[data-color="4"] { background: rgba(160,140,200,0.14); }
 .tt-slot[data-color="5"] { background: rgba(140,190,140,0.14); }
 
-/* Edit mode highlight */
 .tt-grid.is-editing .tt-slot {
   outline: 1px dashed var(--accent);
   outline-offset: -3px;
+  cursor: pointer;
 }
 
-.tt-slot.is-empty::after {
-  content: "＋";
-  display: block;
-  color: var(--text-faint);
-  font-size: 16px;
-  font-style: normal;
-  margin-top: 6px;
-}
-
-/* Modal for editing a slot */
 .tt-modal-backdrop {
   position: fixed;
   inset: 0;
@@ -645,7 +607,6 @@ button, input, textarea {
   padding: 11px 4px;
 }
 .btn-danger-text:hover { text-decoration: underline; }
-
 /* ---------------------------------- Notes ---------------------------------- */
 
 .note-form {
