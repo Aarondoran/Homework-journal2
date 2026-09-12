@@ -367,17 +367,13 @@ function renderTimetable() {
         td.className = "tt-slot" + (entry ? "" : " is-empty");
 
         if (entry) {
-          td.dataset.color = colorIndexFor(entry.subject || "");
-          td.innerHTML = `
-            <div class="tt-subject">${escapeHtml(entry.subject || "")}</div>
-            <div class="tt-meta">
-              ${entry.room ? escapeHtml(entry.room) : ""}
-              ${entry.room && entry.teacher ? " · " : ""}
-              ${entry.teacher ? escapeHtml(entry.teacher) : ""}
-            </div>
-          `;
-        }
-
+  td.dataset.color = colorIndexFor(entry.subject || "");
+  td.innerHTML = `
+    <div class="tt-subject">${escapeHtml(entry.subject || "")}</div>
+    ${entry.room ? `<div class="tt-meta">${escapeHtml(entry.room)}</div>` : ""}
+    ${entry.teacher ? `<div class="tt-meta">${escapeHtml(entry.teacher)}</div>` : ""}
+  `;
+}
         if (ttEditing) {
           td.style.cursor = "pointer";
           td.addEventListener("click", () => openSlotModal(d.id, p.id, key));
