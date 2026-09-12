@@ -537,6 +537,8 @@ button, input, textarea {
   cursor: pointer;
 }
 
+/* ---- Modal (original small sizes) ---- */
+
 .tt-modal-backdrop {
   position: fixed;
   inset: 0;
@@ -552,36 +554,36 @@ button, input, textarea {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-m);
-  padding: 24px;
+  padding: 18px;
   width: 100%;
-  max-width: 420px;
+  max-width: 340px;
 }
 
 .tt-modal h3 {
   font-family: var(--font-display);
   font-weight: 500;
-  font-size: 20px;
-  margin: 0 0 4px;
+  font-size: 15px;
+  margin: 0 0 3px;
 }
 
 .tt-modal-sub {
   color: var(--text-muted);
-  font-size: 13px;
-  margin: 0 0 18px;
+  font-size: 11px;
+  margin: 0 0 12px;
 }
 
 .tt-modal form {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 7px;
 }
 
 .tt-modal input {
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: var(--radius-s);
-  padding: 11px 13px;
-  font-size: 14px;
+  padding: 8px 10px;
+  font-size: 12px;
 }
 
 .tt-modal input:focus {
@@ -591,22 +593,22 @@ button, input, textarea {
 .tt-modal-actions {
   display: flex;
   justify-content: space-between;
-  gap: 10px;
-  margin-top: 8px;
+  gap: 8px;
+  margin-top: 6px;
 }
 
 .tt-modal-actions .right {
   display: flex;
-  gap: 8px;
+  gap: 6px;
 }
 
 .btn-danger-text {
   background: transparent;
   border: none;
   color: var(--danger);
-  font-size: 13px;
+  font-size: 11px;
   cursor: pointer;
-  padding: 11px 4px;
+  padding: 8px 3px;
 }
 
 .btn-danger-text:hover {
