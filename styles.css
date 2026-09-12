@@ -177,6 +177,30 @@ button, input, textarea {
   border-radius: 3px;
 }
 
+/* Google sign-in button (works with class="btn btn-ghost") */
+#googleSignInBtn {
+  width: 100%;
+  margin-top: 2px;
+  justify-content: center;
+}
+
+/* Optional: tiny Google "G" badge before text */
+#googleSignInBtn::before {
+  content: "G";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+}
+
 /* ---------------------------------- App shell ---------------------------------- */
 
 .app {
