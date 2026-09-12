@@ -95,10 +95,12 @@ const googleSignInBtn = document.getElementById("googleSignInBtn");
 if (googleSignInBtn) {
   googleSignInBtn.addEventListener("click", async () => {
     gateError.hidden = true;
+    sessionStorage.setItem("googleSignInPending", "1");
     try {
       await signInWithRedirect(auth, googleProvider);
       // The redirect will take place; getRedirectResult will be processed on page load after redirect returns.
     } catch (err) {
+      sessionStorage.removeItem("googleSignInPending");
       showGateError(err);
     }
   });
@@ -109,25 +111,40 @@ if (googleSignInBtn) {
 // If linking was started we store the pre-link email in sessionStorage under 'linkingEmail'.
 getRedirectResult(auth)
   .then((result) => {
-    if (!result) return;
     const linkingEmail = sessionStorage.getItem("linkingEmail");
-    const resultEmail = result?.user?.email;
-    if (linkingEmail) {
-      // We expected to be linking; verify the email matches the stored one
-      if (resultEmail && linkingEmail.toLowerCase() !== resultEmail.toLowerCase()) {
-        setStatus(hwStatus, "Linked Google account email doesn't match signed-in account.", true);
-        console.warn("Linked email mismatch", linkingEmail, resultEmail);
-      } else {
-        setStatus(hwStatus, "Google account linked.");
-        console.log("Successfully linked Google account (redirect):", result.user);
+    const signInPending = sessionStorage.getItem("googleSignInPending");
+
+    if (!result) {
+      // No redirect result came back, even though we were expecting one.
+      // This is almost always a Firebase configuration issue, not a code
+      // issue: either this domain isn't in Firebase Console -> Authentication
+      // -> Settings -> Authorized domains, or the browser is blocking the
+      // storage/cookies the redirect flow needs to complete.
+      if (linkingEmail) {
+        setStatus(hwStatus, "Google linking didn't complete. This domain may not be authorized in Firebase, or the browser blocked the sign-in storage.", true);
+      } else if (signInPending) {
+        gateError.textContent = "Google sign-in didn't complete. This domain may not be authorized in Firebase, or the browser blocked the sign-in storage. Please try again or use email/password.";
+        gateError.hidden = false;
       }
       sessionStorage.removeItem("linkingEmail");
-    } else {
-      // Normal sign-in redirect completed
-      console.log("Authentication redirect finished:", result);
+      sessionStorage.removeItem("googleSignInPending");
+      return;
+    }
+
+    sessionStorage.removeItem("googleSignInPending");
+    const resultEmail = result?.user?.email;
+    if (linkingEmail) {
+      if (resultEmail && linkingEmail.toLowerCase() !== resultEmail.toLowerCase()) {
+        setStatus(hwStatus, "Linked Google account email doesn't match signed-in account.", true);
+      } else {
+        setStatus(hwStatus, "Google account linked.");
+      }
+      sessionStorage.removeItem("linkingEmail");
     }
   })
   .catch((err) => {
+    sessionStorage.removeItem("googleSignInPending");
+    sessionStorage.removeItem("linkingEmail");
     if (err?.code === "auth/account-exists-with-different-credential") {
       const email = err?.customData?.email || "";
       const emailInput = document.getElementById("emailInput");
