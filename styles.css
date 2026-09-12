@@ -496,9 +496,14 @@ button, input, textarea {
 }
 
 .tt-slot {
-  padding: 24px 6px;
+  padding: 12px 6px;
   min-height: 138px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: flex-start;
   transition: background 0.12s ease;
+  text-align: left;
 }
 
 .tt-slot:hover {
@@ -509,6 +514,7 @@ button, input, textarea {
   color: var(--text-faint);
   font-style: italic;
   font-size: 13.5px;
+  justify-content: flex-start;
 }
 
 .tt-subject {
@@ -537,7 +543,7 @@ button, input, textarea {
   cursor: pointer;
 }
 
-/* ---- Modal (original small sizes) ---- */
+/* ---- Modal (slightly bigger) ---- */
 
 .tt-modal-backdrop {
   position: fixed;
@@ -554,36 +560,36 @@ button, input, textarea {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-m);
-  padding: 18px;
+  padding: 22px;
   width: 100%;
-  max-width: 340px;
+  max-width: 400px;
 }
 
 .tt-modal h3 {
   font-family: var(--font-display);
   font-weight: 500;
-  font-size: 15px;
-  margin: 0 0 3px;
+  font-size: 18px;
+  margin: 0 0 4px;
 }
 
 .tt-modal-sub {
   color: var(--text-muted);
-  font-size: 11px;
-  margin: 0 0 12px;
+  font-size: 12.5px;
+  margin: 0 0 15px;
 }
 
 .tt-modal form {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 9px;
 }
 
 .tt-modal input {
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: var(--radius-s);
-  padding: 8px 10px;
-  font-size: 12px;
+  padding: 10px 12px;
+  font-size: 13px;
 }
 
 .tt-modal input:focus {
@@ -593,22 +599,22 @@ button, input, textarea {
 .tt-modal-actions {
   display: flex;
   justify-content: space-between;
-  gap: 8px;
-  margin-top: 6px;
+  gap: 9px;
+  margin-top: 7px;
 }
 
 .tt-modal-actions .right {
   display: flex;
-  gap: 6px;
+  gap: 7px;
 }
 
 .btn-danger-text {
   background: transparent;
   border: none;
   color: var(--danger);
-  font-size: 11px;
+  font-size: 12px;
   cursor: pointer;
-  padding: 8px 3px;
+  padding: 9px 3px;
 }
 
 .btn-danger-text:hover {
