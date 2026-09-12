@@ -3,8 +3,12 @@ import { firebaseConfig, OWNER_UID } from "./firebase-config.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
 import {
   getAuth,
-  createUserWithEmailAndPassword, signInWithEmailAndPassword,
-  onAuthStateChanged, signOut,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut,
+  GoogleAuthProvider,
+  signInWithRedirect,
+  getRedirectResult,
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 import {
   getFirestore, collection, doc, addDoc, updateDoc, deleteDoc,
@@ -13,6 +17,8 @@ import {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({ prompt: "select_account" });
 const db = getFirestore(app);
 
 // ---------------------------------------------------------------- elements
@@ -37,21 +43,6 @@ document.getElementById("emailForm").addEventListener("submit", async (e) => {
   }
 });
 
-document.getElementById("registerBtn").addEventListener("click", async () => {
-  gateError.hidden = true;
-  const email = document.getElementById("emailInput").value.trim();
-  const pass = document.getElementById("passInput").value;
-  if (!email || !pass) {
-    gateError.textContent = "Enter an email and password first, then tap Create account.";
-    gateError.hidden = false;
-    return;
-  }
-  try {
-    await createUserWithEmailAndPassword(auth, email, pass);
-  } catch (err) {
-    showGateError(err);
-  }
-});
 
 document.getElementById("signOutBtn").addEventListener("click", () => signOut(auth));
 
@@ -67,9 +58,23 @@ function humanizeAuthError(code) {
     "auth/email-already-in-use": "An account with that email already exists — sign in instead.",
     "auth/weak-password": "Use at least 6 characters.",
     "auth/invalid-email": "That email doesn't look right.",
+    "auth/popup-closed-by-user": "Sign-in was canceled.",
+    "auth/cancelled-popup-request": "Sign-in request canceled. Please try again.",
+    "auth/account-exists-with-different-credential": "An account already exists with this email using a different sign-in method.",
+    "auth/operation-not-allowed": "Google sign-in is not enabled in Firebase Auth settings.",
+    "auth/unauthorized-domain": "This domain is not authorized for Firebase Auth."
   };
   return map[code];
 }
+
+document.getElementById("googleSignInBtn").addEventListener("click", async () => {
+  gateError.hidden = true;
+  try {
+    await signInWithRedirect(auth, googleProvider);
+  } catch (err) {
+    showGateError(err);
+  }
+});
 
 onAuthStateChanged(auth, (user) => {
   if (!user) {
@@ -80,22 +85,11 @@ onAuthStateChanged(auth, (user) => {
     if (unsubNotes) unsubNotes();
     return;
   }
-
-  const ownerConfigured = OWNER_UID && OWNER_UID !== "PASTE_YOUR_UID_HERE";
-
-  if (ownerConfigured && user.uid !== OWNER_UID) {
-    gate.hidden = false;
-    appShell.hidden = true;
-    gateLocked.hidden = false;
-    signOut(auth);
-    return;
-  }
-
-  if (!ownerConfigured) {
-    // First run: help the person find their UID so they can lock the deck down.
-    console.info("Study Deck: your UID is", user.uid, "— paste it into OWNER_UID in firebase-config.js, then redeploy.");
-  }
-
+  
+getRedirectResult(auth).catch((err) => {
+  showGateError(err);
+});
+  
   gate.hidden = true;
   gateLocked.hidden = true;
   appShell.hidden = false;
