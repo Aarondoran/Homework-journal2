@@ -1,4 +1,7 @@
-import { firebaseConfig } from "./firebase-config.js";
+// app.js — single-file replacement (redirect-only Google flows)
+
+import { firebaseConfig, OWNER_UID } from "./firebase-config.js";
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
 import {
   getAuth,
@@ -8,7 +11,7 @@ import {
   GoogleAuthProvider,
   signInWithRedirect,
   getRedirectResult,
-  linkWithPopup,
+  linkWithRedirect,
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 
 import {
@@ -16,6 +19,7 @@ import {
   onSnapshot, query, orderBy, serverTimestamp, getDocs,
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -23,49 +27,32 @@ const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({ prompt: "select_account" });
 
-// ---------------------------------------------------------------- elements
+// -------------------- DOM elements --------------------
 const gate = document.getElementById("gate");
 const appShell = document.getElementById("app");
 const gateError = document.getElementById("gateError");
 const gateLocked = document.getElementById("gateLocked");
-
+const railNav = document.getElementById("railNav");
+const hwForm = document.getElementById("hwForm");
+const hwGroups = document.getElementById("hwGroups");
+const hwEmpty = document.getElementById("hwEmpty");
+const hwStatus = document.getElementById("hwStatus");
+const noteForm = document.getElementById("noteForm");
+const noteGrid = document.getElementById("noteGrid");
+const noteEmpty = document.getElementById("noteEmpty");
+const noteStatus = document.getElementById("noteStatus");
+const ttImage = document.getElementById("ttImage");
+const ttPlaceholder = document.getElementById("ttPlaceholder");
+const ttStatus = document.getElementById("ttStatus");
+const exportBtn = document.getElementById("exportBtn");
+const linkBtn = document.getElementById("linkGoogleBtn");
+let currentUid = null;
 let unsubHw = null;
 let unsubNotes = null;
 
-// ---------------------------------------------------------------- auth
-document.getElementById("emailForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  gateError.hidden = true;
-
-  const email = document.getElementById("emailInput").value.trim();
-  const pass = document.getElementById("passInput").value;
-
-  try {
-    await signInWithEmailAndPassword(auth, email, pass);
-  } catch (err) {
-    showGateError(err);
-  }
-});
-
-document.getElementById("googleSignInBtn")?.addEventListener("click", async () => {
-  gateError.hidden = true;
-  try {
-    await signInWithRedirect(auth, googleProvider);
-  } catch (err) {
-    showGateError(err);
-  }
-});
-
-// IMPORTANT: this does not unlock app itself.
-// It only surfaces redirect errors; successful auth is handled by onAuthStateChanged.
-getRedirectResult(auth).catch((err) => {
-  showGateError(err);
-});
-
-document.getElementById("signOutBtn").addEventListener("click", () => signOut(auth));
-
+// -------------------- Auth helpers --------------------
 function showGateError(err) {
-  gateError.textContent = humanizeAuthError(err?.code) || "Sign-in failed. Please try again.";
+  gateError.textContent = humanizeAuthError(err?.code) || String(err?.message || err) || "Sign-in failed. Please try again.";
   gateError.hidden = false;
 }
 
@@ -77,7 +64,7 @@ function humanizeAuthError(code) {
     "auth/invalid-email": "That email doesn't look right.",
     "auth/user-disabled": "This account has been disabled.",
     "auth/too-many-requests": "Too many attempts. Please try again later.",
-    "auth/account-exists-with-different-credential": "This email is already linked to a different sign-in method.",
+    "auth/account-exists-with-different-credential": "This email is linked to a different sign-in method.",
     "auth/operation-not-allowed": "Google sign-in is not enabled in Firebase.",
     "auth/unauthorized-domain": "This domain is not authorized for sign-in.",
     "auth/popup-closed-by-user": "Sign-in was canceled.",
@@ -86,6 +73,65 @@ function humanizeAuthError(code) {
   return map[code];
 }
 
+// -------------------- Email/password sign-in --------------------
+const emailForm = document.getElementById("emailForm");
+if (emailForm) {
+  emailForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    gateError.hidden = true;
+    const email = document.getElementById("emailInput").value.trim();
+    const pass = document.getElementById("passInput").value;
+    try {
+      await signInWithEmailAndPassword(auth, email, pass);
+      // onAuthStateChanged will handle UI
+    } catch (err) {
+      showGateError(err);
+    }
+  });
+}
+
+// -------------------- Google sign-in (redirect) --------------------
+const googleSignInBtn = document.getElementById("googleSignInBtn");
+if (googleSignInBtn) {
+  googleSignInBtn.addEventListener("click", async () => {
+    gateError.hidden = true;
+    try {
+      await signInWithRedirect(auth, googleProvider);
+      // The redirect will take place; getRedirectResult will be processed on page load after redirect returns.
+    } catch (err) {
+      showGateError(err);
+    }
+  });
+}
+
+// -------------------- Handle redirect results --------------------
+// Process both sign-in redirects and linking redirects here.
+// If linking was started we store the pre-link email in sessionStorage under 'linkingEmail'.
+getRedirectResult(auth)
+  .then((result) => {
+    if (!result) return;
+    const linkingEmail = sessionStorage.getItem("linkingEmail");
+    const resultEmail = result?.user?.email;
+    if (linkingEmail) {
+      // We expected to be linking; verify the email matches the stored one
+      if (resultEmail && linkingEmail.toLowerCase() !== resultEmail.toLowerCase()) {
+        setStatus(hwStatus, "Linked Google account email doesn't match signed-in account.", true);
+        console.warn("Linked email mismatch", linkingEmail, resultEmail);
+      } else {
+        setStatus(hwStatus, "Google account linked.");
+        console.log("Successfully linked Google account (redirect):", result.user);
+      }
+      sessionStorage.removeItem("linkingEmail");
+    } else {
+      // Normal sign-in redirect completed
+      console.log("Authentication redirect finished:", result);
+    }
+  })
+  .catch((err) => {
+    showGateError(err);
+  });
+
+// -------------------- onAuthStateChanged --------------------
 onAuthStateChanged(auth, (user) => {
   if (!user) {
     gate.hidden = false;
@@ -97,7 +143,6 @@ onAuthStateChanged(auth, (user) => {
     return;
   }
 
-  
   gate.hidden = true;
   gateLocked.hidden = true;
   appShell.hidden = false;
@@ -106,75 +151,41 @@ onAuthStateChanged(auth, (user) => {
   startSync(user.uid);
 });
 
-document.getElementById("googleSignInBtn").addEventListener("click", async () => {
-  gateError.hidden = true;
-  try {
-    await signInWithRedirect(auth, googleProvider);
-  } catch (err) {
-    showGateError(err);
-  }
-});
+// -------------------- Navigation --------------------
+if (railNav) {
+  railNav.addEventListener("click", (e) => {
+    const btn = e.target.closest(".rail-link");
+    if (!btn) return;
+    document.querySelectorAll(".rail-link").forEach((b) => b.classList.remove("is-active"));
+    document.querySelectorAll(".panel").forEach((p) => p.classList.remove("is-active"));
+    btn.classList.add("is-active");
+    document.getElementById(`panel-${btn.dataset.panel}`).classList.add("is-active");
+  });
+}
 
-onAuthStateChanged(auth, (user) => {
-  if (!user) {
-    gate.hidden = false;
-    appShell.hidden = true;
-    currentUid = null;
-    if (unsubHw) unsubHw();
-    if (unsubNotes) unsubNotes();
-    return;
-  }
-  
-getRedirectResult(auth).catch((err) => {
-  showGateError(err);
-});
-  
-  gate.hidden = true;
-  gateLocked.hidden = true;
-  appShell.hidden = false;
-  document.getElementById("userEmail").textContent = user.email || "";
-  loadStaticTimetable();
-  startSync(user.uid);
-});
-
-// ---------------------------------------------------------------- nav
-const railNav = document.getElementById("railNav");
-railNav.addEventListener("click", (e) => {
-  const btn = e.target.closest(".rail-link");
-  if (!btn) return;
-  document.querySelectorAll(".rail-link").forEach((b) => b.classList.remove("is-active"));
-  document.querySelectorAll(".panel").forEach((p) => p.classList.remove("is-active"));
-  btn.classList.add("is-active");
-  document.getElementById(`panel-${btn.dataset.panel}`).classList.add("is-active");
-});
-
-// ---------------------------------------------------------------- homework
-const hwForm = document.getElementById("hwForm");
-const hwGroups = document.getElementById("hwGroups");
-const hwEmpty = document.getElementById("hwEmpty");
-const hwStatus = document.getElementById("hwStatus");
-let currentUid = null;
-
-hwForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  if (!currentUid) return;
-  const subject = document.getElementById("hwSubject").value.trim();
-  const task = document.getElementById("hwTask").value.trim();
-  const due = document.getElementById("hwDue").value;
-  if (!subject || !task || !due) {
-    setStatus(hwStatus, "Please enter subject, task, and due date.", true);
-    return;
-  }
-  try {
-    await addDoc(collection(db, "users", currentUid, "homework"), {
-      subject, task, due, done: false, createdAt: serverTimestamp(),
-    });
-    hwForm.reset();
-    setStatus(hwStatus, "Homework saved.");
-  } catch (err) {
-    setStatus(hwStatus, humanizeFirestoreError(err), true);
-  }
-});
+// -------------------- Homework (unchanged behavior) --------------------
+if (hwForm) {
+  hwForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!currentUid) return;
+    const subject = document.getElementById("hwSubject").value.trim();
+    const task = document.getElementById("hwTask").value.trim();
+    const due = document.getElementById("hwDue").value;
+    if (!subject || !task || !due) {
+      setStatus(hwStatus, "Please enter subject, task, and due date.", true);
+      return;
+    }
+    try {
+      await addDoc(collection(db, "users", currentUid, "homework"), {
+        subject, task, due, done: false, createdAt: serverTimestamp(),
+      });
+      hwForm.reset();
+      setStatus(hwStatus, "Homework saved.");
+    } catch (err) {
+      setStatus(hwStatus, humanizeFirestoreError(err), true);
+    }
+  });
+}
 
 function renderHomework(items) {
   hwEmpty.hidden = items.length > 0;
@@ -262,30 +273,27 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
-// ---------------------------------------------------------------- notes
-const noteForm = document.getElementById("noteForm");
-const noteGrid = document.getElementById("noteGrid");
-const noteEmpty = document.getElementById("noteEmpty");
-const noteStatus = document.getElementById("noteStatus");
-
-noteForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  if (!currentUid) return;
-  const text = document.getElementById("noteText").value.trim();
-  if (!text) {
-    setStatus(noteStatus, "Please add a note before saving.", true);
-    return;
-  }
-  try {
-    await addDoc(collection(db, "users", currentUid, "notes"), {
-      text, createdAt: serverTimestamp(),
-    });
-    noteForm.reset();
-    setStatus(noteStatus, "Note saved.");
-  } catch (err) {
-    setStatus(noteStatus, humanizeFirestoreError(err), true);
-  }
-});
+// -------------------- Notes --------------------
+if (noteForm) {
+  noteForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!currentUid) return;
+    const text = document.getElementById("noteText").value.trim();
+    if (!text) {
+      setStatus(noteStatus, "Please add a note before saving.", true);
+      return;
+    }
+    try {
+      await addDoc(collection(db, "users", currentUid, "notes"), {
+        text, createdAt: serverTimestamp(),
+      });
+      noteForm.reset();
+      setStatus(noteStatus, "Note saved.");
+    } catch (err) {
+      setStatus(noteStatus, humanizeFirestoreError(err), true);
+    }
+  });
+}
 
 function renderNotes(items) {
   noteEmpty.hidden = items.length > 0;
@@ -306,11 +314,7 @@ function renderNotes(items) {
   });
 }
 
-// ---------------------------------------------------------------- timetable
-const ttImage = document.getElementById("ttImage");
-const ttPlaceholder = document.getElementById("ttPlaceholder");
-const ttStatus = document.getElementById("ttStatus");
-
+// -------------------- Timetable --------------------
 const TIMETABLE_IMAGE_PATH = "timetable.jpg";
 
 function loadStaticTimetable() {
@@ -331,6 +335,7 @@ function loadStaticTimetable() {
   ttImage.src = TIMETABLE_IMAGE_PATH;
 }
 
+// -------------------- Sync --------------------
 function startSync(uid) {
   currentUid = uid;
   if (unsubHw) unsubHw();
@@ -357,6 +362,7 @@ function startSync(uid) {
   );
 }
 
+// -------------------- Status & errors --------------------
 function setStatus(el, message, isError = false) {
   if (!el) return;
   el.textContent = message || "";
@@ -373,89 +379,53 @@ function humanizeFirestoreError(err) {
   };
   return map[code] || "Save failed. Please try again.";
 }
-// ---------------------------------------------------------------- export / backup
-document.getElementById("exportBtn").addEventListener("click", async () => {
-  if (!currentUid) return;
-  const [hwSnap, notesSnap] = await Promise.all([
-    getDocs(collection(db, "users", currentUid, "homework")),
-    getDocs(collection(db, "users", currentUid, "notes")),
-  ]);
-  const payload = {
-    exportedAt: new Date().toISOString(),
-    homework: hwSnap.docs.map((d) => ({ id: d.id, ...d.data() })),
-    notes: notesSnap.docs.map((d) => ({ id: d.id, ...d.data() })),
-  };
-  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = `study-deck-backup-${new Date().toISOString().slice(0, 10)}.json`;
-  a.click();
-  URL.revokeObjectURL(a.href);
-});
 
-// Link Google account to currently signed-in user
-const linkBtn = document.getElementById("linkGoogleBtn");
+// -------------------- Export --------------------
+if (exportBtn) {
+  exportBtn.addEventListener("click", async () => {
+    if (!currentUid) return;
+    const [hwSnap, notesSnap] = await Promise.all([
+      getDocs(collection(db, "users", currentUid, "homework")),
+      getDocs(collection(db, "users", currentUid, "notes")),
+    ]);
+    const payload = {
+      exportedAt: new Date().toISOString(),
+      homework: hwSnap.docs.map((d) => ({ id: d.id, ...d.data() })),
+      notes: notesSnap.docs.map((d) => ({ id: d.id, ...d.data() })),
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `study-deck-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+}
+
+// -------------------- Link Google (redirect-only) --------------------
 if (linkBtn) {
   linkBtn.addEventListener("click", async () => {
     if (!auth.currentUser) {
       setStatus(hwStatus, "Sign in first to link accounts.", true);
       return;
     }
-    try {
-      const result = await linkWithPopup(auth.currentUser, googleProvider);
-      const credential = GoogleAuthProvider.credentialFromResult(result);
-      const linkedEmail = result?.user?.email;
-      const currentEmail = auth.currentUser?.email;
-      if (linkedEmail && currentEmail && linkedEmail.toLowerCase() !== currentEmail.toLowerCase()) {
-        setStatus(hwStatus, "Linked Google account email doesn't match signed-in account.", true);
-        console.warn('Linked email mismatch', linkedEmail, currentEmail);
-        return;
-      }
-      setStatus(hwStatus, "Google account linked.");
-      console.log("Successfully linked Google account", result.user);
-    } catch (err) {
-      setStatus(hwStatus, humanizeAuthError(err?.code) || "Error linking Google account.", true);
-      console.error("Error linking Google account:", err);
-    }
-  });
-}
-// ---------------------------------------------------------------- Connect Google
 
-// Link Google account to currently signed-in user
-const linkBtn = document.getElementById("linkGoogleBtn");
-if (linkBtn) {
-  linkBtn.addEventListener("click", async () => {
-    // Check if a user is logged in
-    if (!auth.currentUser) {
-      setStatus(hwStatus, "Sign in first to link accounts.", true);
-      return;
-    }
-    
+    // Store the current signed-in email so we can verify it after the redirect returns.
+    const currentEmail = auth.currentUser.email || "";
+    sessionStorage.setItem("linkingEmail", currentEmail);
+
     try {
-      // Prompt user to sign in with Google to link accounts
-      const result = await linkWithPopup(auth.currentUser, googleProvider);
-      
-      // Verify that emails match (enforce same-email requirement)
-      const linkedEmail = result?.user?.email;
-      const currentEmail = auth.currentUser?.email;
-      
-      if (linkedEmail && currentEmail && linkedEmail.toLowerCase() !== currentEmail.toLowerCase()) {
-        setStatus(hwStatus, "Linked Google account email doesn't match signed-in account.", true);
-        console.warn('Linked email mismatch', linkedEmail, currentEmail);
-        return;
-      }
-      
-      setStatus(hwStatus, "Google account linked.");
-      console.log("Successfully linked Google account", result.user);
-      
+      await linkWithRedirect(auth.currentUser, googleProvider);
+      // The redirect will happen and the result will be processed by getRedirectResult on page load.
     } catch (err) {
-      // Show clean, readable error messages
-      setStatus(hwStatus, humanizeAuthError(err?.code) || "Error linking Google account.", true);
-      console.error("Error linking Google account:", err);
+      sessionStorage.removeItem("linkingEmail");
+      setStatus(hwStatus, humanizeAuthError(err?.code) || "Error starting linking redirect.", true);
+      console.error("Error starting linkWithRedirect:", err);
     }
   });
 }
-// ---------------------------------------------------------------- PWA
+
+// -------------------- PWA --------------------
 if ("serviceWorker" in navigator) {
   // No offline caching requested — manifest alone enables "Add to Home Screen".
 }
