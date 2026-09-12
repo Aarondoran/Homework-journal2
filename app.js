@@ -132,9 +132,12 @@ getRedirectResult(auth)
     }
 
     sessionStorage.removeItem("googleSignInPending");
+    const credential = GoogleAuthProvider.credentialFromResult(result);
     const resultEmail = result?.user?.email;
     if (linkingEmail) {
-      if (resultEmail && linkingEmail.toLowerCase() !== resultEmail.toLowerCase()) {
+      if (!credential) {
+        setStatus(hwStatus, "Google linking didn't return a valid credential. Please try again.", true);
+      } else if (resultEmail && linkingEmail.toLowerCase() !== resultEmail.toLowerCase()) {
         setStatus(hwStatus, "Linked Google account email doesn't match signed-in account.", true);
       } else {
         setStatus(hwStatus, "Google account linked.");
