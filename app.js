@@ -10,7 +10,7 @@ import {
 
 import {
   getFirestore, collection, doc, addDoc, updateDoc, deleteDoc,
-  onSnapshot, query, orderBy, serverTimestamp, getDocs,
+  onSnapshot, query, orderBy, serverTimestamp, getDocs, setDoc,
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
 // Initialize Firebase
@@ -88,12 +88,13 @@ onAuthStateChanged(auth, (user) => {
     if (unsubNotes) unsubNotes();
     return;
   }
-
+  
   gate.hidden = true;
   appShell.hidden = false;
   document.getElementById("userEmail").textContent = user.email || "";
   loadStaticTimetable();
   startSync(user.uid);
+  startTimetableSync(user.uid)
 });
 
 // -------------------- Navigation --------------------
@@ -260,26 +261,268 @@ function renderNotes(items) {
 }
 
 // -------------------- Timetable --------------------
-const TIMETABLE_IMAGE_PATH = "timetable.jpg";
+// Times follow the school timetable image exactly.
+// Tutor time is fixed. P6 only runs Mon/Wed/Fri (Tue & Thu finish after P5).
+const PERIODS = [
+  { id: "tutor",  label: "Tutor time", start: "8:30",  end: "8:42",  type: "tutor" },
+  { id: "p1",     label: "",           start: "8:42",  end: "9:40",  type: "class" },
+  { id: "p2",     label: "",           start: "9:40",  end: "10:38", type: "class" },
+  { id: "break1", label: "Break",      start: "10:38", end: "10:53", type: "break" },
+  { id: "p3",     label: "",           start: "10:53", end: "11:51", type: "class" },
+  { id: "p4",     label: "",           start: "11:51", end: "12:49", type: "class" },
+  { id: "lunch",  label: "Lunch",      start: "12:49", end: "13:20", type: "break" },
+  { id: "p5",     label: "",           start: "13:20", end: "14:18", type: "class" },
+  { id: "p6",     label: "",           start: "14:18", end: "15:16", type: "class" },
+];
 
-function loadStaticTimetable() {
-  if (!ttImage) return;
+const DAYS = [
+  { id: "mon", label: "Monday" },
+  { id: "tue", label: "Tuesday" },
+  { id: "wed", label: "Wednesday" },
+  { id: "thu", label: "Thursday" },
+  { id: "fri", label: "Friday" },
+];
 
-  ttImage.onload = () => {
-    ttImage.hidden = false;
-    if (ttPlaceholder) ttPlaceholder.hidden = true;
-    if (ttStatus) ttStatus.textContent = "";
-  };
-
-  ttImage.onerror = () => {
-    ttImage.hidden = true;
-    if (ttPlaceholder) ttPlaceholder.hidden = false;
-    if (ttStatus) ttStatus.textContent = "Couldn't load timetable.jpg";
-  };
-
-  ttImage.src = TIMETABLE_IMAGE_PATH;
+// P6 exists only on Monday, Wednesday and Friday.
+function slotExists(periodId, dayId) {
+  if (periodId === "p6") {
+    return dayId === "mon" || dayId === "wed" || dayId === "fri";
+  }
+  return true;
 }
 
+let ttData = {};        // { "mon|p1": { subject, room, teacher }, ... }
+let ttEditing = false;
+let unsubTimetable = null;
+
+const ttGrid = document.getElementById("ttGrid");
+const ttStatus = document.getElementById("ttStatus");
+const ttEmpty = document.getElementById("ttEmpty");
+const ttEditBtn = document.getElementById("ttEditBtn");
+const ttClearBtn = document.getElementById("ttClearBtn");
+
+function slotKey(dayId, periodId) {
+  return `${dayId}|${periodId}`;
+}
+
+function colorIndexFor(str) {
+  if (!str) return 0;
+  let h = 0;
+  for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0;
+  return h % 6;
+}
+
+function renderTimetable() {
+  if (!ttGrid) return;
+  ttGrid.innerHTML = "";
+
+  // Header row
+  const thead = document.createElement("thead");
+  const headRow = document.createElement("tr");
+  headRow.appendChild(document.createElement("th"));
+  DAYS.forEach((d) => {
+    const th = document.createElement("th");
+    th.textContent = d.label;
+    headRow.appendChild(th);
+  });
+  thead.appendChild(headRow);
+  ttGrid.appendChild(thead);
+
+  // Body rows
+  const tbody = document.createElement("tbody");
+  PERIODS.forEach((p) => {
+    const tr = document.createElement("tr");
+
+    // Time cell
+    const timeCell = document.createElement("td");
+    timeCell.className = "tt-time";
+    timeCell.textContent = p.type === "tutor" ? "" : `${p.start} – ${p.end}`;
+    tr.appendChild(timeCell);
+
+    if (p.type === "tutor") {
+      tr.classList.add("tt-tutor");
+      DAYS.forEach(() => {
+        const td = document.createElement("td");
+        td.innerHTML = `<div class="tt-subject">Tutor time</div>`;
+        tr.appendChild(td);
+      });
+    } else if (p.type === "break") {
+      tr.classList.add("tt-break");
+      DAYS.forEach(() => {
+        const td = document.createElement("td");
+        td.textContent = p.label;
+        tr.appendChild(td);
+      });
+    } else {
+      DAYS.forEach((d) => {
+        const td = document.createElement("td");
+        if (!slotExists(p.id, d.id)) {
+          td.className = "tt-slot is-empty";
+          td.textContent = "—";
+          td.style.cursor = "default";
+          tr.appendChild(td);
+          return;
+        }
+
+        const key = slotKey(d.id, p.id);
+        const entry = ttData[key];
+        td.className = "tt-slot" + (entry ? "" : " is-empty");
+
+        if (entry) {
+          td.dataset.color = colorIndexFor(entry.subject || "");
+          td.innerHTML = `
+            <div class="tt-subject">${escapeHtml(entry.subject || "")}</div>
+            <div class="tt-meta">
+              ${entry.room ? escapeHtml(entry.room) : ""}
+              ${entry.room && entry.teacher ? " · " : ""}
+              ${entry.teacher ? escapeHtml(entry.teacher) : ""}
+            </div>
+          `;
+        }
+
+        if (ttEditing) {
+          td.style.cursor = "pointer";
+          td.addEventListener("click", () => openSlotModal(d.id, p.id, key));
+        }
+
+        tr.appendChild(td);
+      });
+    }
+
+    tbody.appendChild(tr);
+  });
+  ttGrid.appendChild(tbody);
+
+  const hasAny = Object.keys(ttData).length > 0;
+  if (ttEmpty) ttEmpty.hidden = hasAny || ttEditing;
+  if (ttGrid) ttGrid.classList.toggle("is-editing", ttEditing);
+}
+
+function openSlotModal(dayId, periodId, key) {
+  const day = DAYS.find((d) => d.id === dayId);
+  const period = PERIODS.find((p) => p.id === periodId);
+  const existing = ttData[key] || {};
+
+  const backdrop = document.createElement("div");
+  backdrop.className = "tt-modal-backdrop";
+  backdrop.addEventListener("click", (e) => {
+    if (e.target === backdrop) backdrop.remove();
+  });
+
+  const modal = document.createElement("div");
+  modal.className = "tt-modal";
+  modal.innerHTML = `
+    <h3>${escapeHtml(day.label)} · ${period.start}–${period.end}</h3>
+    <p class="tt-modal-sub">Enter the class details.</p>
+    <form id="slotForm">
+      <input type="text" id="slotSubject" placeholder="Subject" value="${escapeAttr(existing.subject || "")}" required />
+      <input type="text" id="slotRoom" placeholder="Room (e.g. Room 19)" value="${escapeAttr(existing.room || "")}" />
+      <input type="text" id="slotTeacher" placeholder="Teacher" value="${escapeAttr(existing.teacher || "")}" />
+      <div class="tt-modal-actions">
+        <div class="left">
+          <button type="button" class="btn-danger-text" id="slotDelete" ${existing.subject ? "" : "hidden"}>Remove class</button>
+        </div>
+        <div class="right">
+          <button type="button" class="btn btn-ghost" id="slotCancel">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+      </div>
+    </form>
+  `;
+  backdrop.appendChild(modal);
+  document.body.appendChild(backdrop);
+
+  const form = modal.querySelector("#slotForm");
+  const subjectInput = modal.querySelector("#slotSubject");
+  subjectInput.focus();
+
+  modal.querySelector("#slotCancel").addEventListener("click", () => backdrop.remove());
+  modal.querySelector("#slotDelete").addEventListener("click", async () => {
+    await saveSlot(key, null);
+    backdrop.remove();
+    renderTimetable();
+  });
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const subject = subjectInput.value.trim();
+    const room = modal.querySelector("#slotRoom").value.trim();
+    const teacher = modal.querySelector("#slotTeacher").value.trim();
+    if (!subject) return;
+    await saveSlot(key, { subject, room, teacher });
+    backdrop.remove();
+    renderTimetable();
+  });
+}
+
+async function saveSlot(key, value) {
+  if (!currentUid) return;
+  try {
+    if (value) {
+      ttData[key] = value;
+      await setDoc(doc(db, "users", currentUid, "timetable", key), value);
+      setStatus(ttStatus, "Saved.");
+    } else {
+      delete ttData[key];
+      await deleteDoc(doc(db, "users", currentUid, "timetable", key));
+      setStatus(ttStatus, "Removed.");
+    }
+  } catch (err) {
+    setStatus(ttStatus, humanizeFirestoreError(err), true);
+  }
+}
+
+function escapeAttr(str) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+if (ttEditBtn) {
+  ttEditBtn.addEventListener("click", () => {
+    ttEditing = !ttEditing;
+    ttEditBtn.textContent = ttEditing ? "Done editing" : "Edit timetable";
+    ttEditBtn.classList.toggle("btn-primary", ttEditing);
+    ttEditBtn.classList.toggle("btn-ghost", !ttEditing);
+    if (ttStatus) ttStatus.textContent = ttEditing
+      ? "Tap any cell to add or change a class."
+      : "";
+    renderTimetable();
+  });
+}
+
+if (ttClearBtn) {
+  ttClearBtn.addEventListener("click", async () => {
+    if (!currentUid) return;
+    if (!confirm("Remove all classes from your timetable?")) return;
+    try {
+      const snap = await getDocs(collection(db, "users", currentUid, "timetable"));
+      await Promise.all(snap.docs.map((d) => deleteDoc(d.ref)));
+      ttData = {};
+      renderTimetable();
+      setStatus(ttStatus, "Timetable cleared.");
+    } catch (err) {
+      setStatus(ttStatus, humanizeFirestoreError(err), true);
+    }
+  });
+}
+
+function startTimetableSync(uid) {
+  if (unsubTimetable) unsubTimetable();
+  unsubTimetable = onSnapshot(
+    collection(db, "users", uid, "timetable"),
+    (snap) => {
+      ttData = {};
+      snap.docs.forEach((d) => {
+        ttData[d.id] = d.data();
+      });
+      renderTimetable();
+    },
+    (err) => setStatus(ttStatus, humanizeFirestoreError(err), true)
+  );
+}
 // -------------------- Sync --------------------
 function startSync(uid) {
   currentUid = uid;
@@ -337,6 +580,7 @@ if (exportBtn) {
       exportedAt: new Date().toISOString(),
       homework: hwSnap.docs.map((d) => ({ id: d.id, ...d.data() })),
       notes: notesSnap.docs.map((d) => ({ id: d.id, ...d.data() })),
+      timetable: Object.entries(ttData).map(([id, data]) => ({ id, ...data })),
     };
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
     const a = document.createElement("a");
@@ -354,6 +598,7 @@ if (signOutBtn) {
       setStatus(hwStatus, humanizeAuthError(err?.code) || "Sign out failed.", true);
     });
   });
+  if (unsubTimetable) unsubTimetable();
 }
 
 // -------------------- PWA --------------------
