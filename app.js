@@ -31,7 +31,6 @@ const noteForm = document.getElementById("noteForm");
 const noteGrid = document.getElementById("noteGrid");
 const noteEmpty = document.getElementById("noteEmpty");
 const noteStatus = document.getElementById("noteStatus");
-const ttStatus = document.getElementById("ttStatus");
 const exportBtn = document.getElementById("exportBtn");
 const signOutBtn = document.getElementById("signOutBtn");
 
