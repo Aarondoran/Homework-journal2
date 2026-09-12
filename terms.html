@@ -1,0 +1,1873 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Terms of Service for Homework Journal.">
+<meta name="theme-color" content="#0F1115">
+<title>Terms of Service — Homework Journal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+
+<style>
+
+    :root {
+        --bg: #0F1115;
+        --surface: #171A21;
+        --surface-raised: #1D212B;
+
+        --border: #262B35;
+        --border-soft: #1E222C;
+
+        --text: #E8E6E1;
+        --text-muted: #8B8F98;
+        --text-faint: #565B67;
+
+        --accent: #4FB0A5;
+        --danger: #C97361;
+
+        --font-display: "Fraunces", Georgia, serif;
+        --font-body: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+
+        --radius-s: 3px;
+    }
+
+
+    * {
+        box-sizing: border-box;
+    }
+
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+
+    body {
+        margin: 0;
+        padding: 0;
+
+        background: var(--bg);
+        color: var(--text);
+
+        font-family: var(--font-body);
+
+        -webkit-font-smoothing: antialiased;
+    }
+
+
+    a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+
+    :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 3px;
+    }
+
+
+    .container {
+        width: min(900px, calc(100% - 40px));
+        margin: 0 auto;
+    }
+
+
+    /* ================================
+       Navigation
+    ================================= */
+
+
+    header {
+        border-bottom: 1px solid var(--border-soft);
+    }
+
+
+    .nav {
+        height: 72px;
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        gap: 20px;
+    }
+
+
+    .brand {
+        font-family: var(--font-display);
+
+        font-size: 19px;
+        font-weight: 500;
+
+        letter-spacing: -0.02em;
+    }
+
+
+    .brand-dot {
+        color: var(--accent);
+    }
+
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+
+        gap: 8px;
+
+        color: var(--text-muted);
+
+        font-size: 14px;
+
+        transition: color 0.15s ease;
+    }
+
+
+    .back-link:hover {
+        color: var(--accent);
+    }
+
+
+    /* ================================
+       Hero
+    ================================= */
+
+
+    .hero {
+        position: relative;
+
+        overflow: hidden;
+
+        padding: 100px 0 80px;
+
+        border-bottom: 1px solid var(--border-soft);
+    }
+
+
+    .hero::before {
+        content: "";
+
+        position: absolute;
+
+        width: 700px;
+        height: 500px;
+
+        top: -300px;
+        left: -250px;
+
+        background:
+            radial-gradient(
+                ellipse,
+                rgba(79, 176, 165, 0.10),
+                transparent 65%
+            );
+
+        pointer-events: none;
+    }
+
+
+    .hero-content {
+        position: relative;
+    }
+
+
+    .eyebrow {
+        display: flex;
+        align-items: center;
+
+        gap: 9px;
+
+        color: var(--accent);
+
+        font-size: 13px;
+        font-weight: 500;
+
+        margin-bottom: 22px;
+    }
+
+
+    .eyebrow-line {
+        width: 24px;
+        height: 1px;
+
+        background: var(--accent);
+    }
+
+
+    h1 {
+        font-family: var(--font-display);
+
+        font-size: clamp(46px, 7vw, 72px);
+        font-weight: 500;
+
+        line-height: 1.05;
+        letter-spacing: -0.04em;
+
+        margin: 0 0 22px;
+    }
+
+
+    .hero-text {
+        max-width: 620px;
+
+        color: var(--text-muted);
+
+        font-size: 16px;
+        line-height: 1.7;
+
+        margin: 0;
+    }
+
+
+    .updated {
+        display: inline-flex;
+
+        margin-top: 28px;
+
+        padding: 8px 11px;
+
+        border: 1px solid var(--border);
+
+        background: var(--surface);
+
+        color: var(--text-faint);
+
+        font-size: 12px;
+    }
+
+
+    /* ================================
+       Content
+    ================================= */
+
+
+    .content {
+        padding: 70px 0 100px;
+    }
+
+
+    .terms-layout {
+        display: grid;
+
+        grid-template-columns: 190px 1fr;
+
+        gap: 70px;
+    }
+
+
+    .terms-nav {
+        position: sticky;
+
+        top: 30px;
+
+        align-self: start;
+    }
+
+
+    .terms-nav-title {
+        color: var(--text-faint);
+
+        font-size: 11px;
+        font-weight: 600;
+
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+
+        margin-bottom: 12px;
+    }
+
+
+    .terms-nav a {
+        display: block;
+
+        padding: 7px 0;
+
+        color: var(--text-muted);
+
+        font-size: 13px;
+
+        transition: color 0.15s ease;
+    }
+
+
+    .terms-nav a:hover {
+        color: var(--accent);
+    }
+
+
+    .terms {
+        max-width: 650px;
+    }
+
+
+    .terms-section {
+        padding-bottom: 48px;
+
+        margin-bottom: 48px;
+
+        border-bottom: 1px solid var(--border-soft);
+    }
+
+
+    .terms-section:last-child {
+        border-bottom: none;
+
+        margin-bottom: 0;
+    }
+
+
+    .terms-section h2 {
+        font-family: var(--font-display);
+
+        font-size: 28px;
+        font-weight: 500;
+
+        letter-spacing: -0.02em;
+
+        margin: 0 0 17px;
+    }
+
+
+    .terms-section h3 {
+        font-size: 15px;
+        font-weight: 600;
+
+        margin: 25px 0 10px;
+    }
+
+
+    .terms-section p {
+        color: var(--text-muted);
+
+        font-size: 14px;
+        line-height: 1.8;
+
+        margin: 0 0 16px;
+    }
+
+
+    .terms-section p:last-child {
+        margin-bottom: 0;
+    }
+
+
+    .terms-section ul {
+        margin: 16px 0;
+
+        padding-left: 20px;
+
+        color: var(--text-muted);
+    }
+
+
+    .terms-section li {
+        padding-left: 5px;
+
+        font-size: 14px;
+        line-height: 1.8;
+
+        margin-bottom: 6px;
+    }
+
+
+    .highlight {
+        border-left: 2px solid var(--accent);
+
+        background: var(--surface);
+
+        padding: 18px 20px;
+
+        margin-top: 20px;
+    }
+
+
+    .highlight p {
+        margin: 0;
+    }
+
+
+    .warning {
+        border-left: 2px solid var(--danger);
+
+        background: var(--surface);
+
+        padding: 18px 20px;
+
+        margin-top: 20px;
+    }
+
+
+    .warning p {
+        margin: 0;
+    }
+
+
+    .contact-box {
+        border: 1px solid var(--border);
+
+        background: var(--surface);
+
+        padding: 24px;
+    }
+
+
+    .contact-box p {
+        margin-bottom: 12px;
+    }
+
+
+    .contact-link {
+        color: var(--accent);
+
+        font-size: 14px;
+
+        word-break: break-word;
+    }
+
+
+    .contact-link:hover {
+        text-decoration: underline;
+    }
+
+
+    /* ================================
+       Footer
+    ================================= */
+
+
+    footer {
+        border-top: 1px solid var(--border);
+    }
+
+
+    .footer {
+        min-height: 100px;
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        gap: 20px;
+    }
+
+
+    .footer-copy {
+        color: var(--text-faint);
+
+        font-size: 12px;
+    }
+
+
+    .footer-links {
+        display: flex;
+
+        gap: 20px;
+    }
+
+
+    .footer-links a {
+        color: var(--text-muted);
+
+        font-size: 12px;
+    }
+
+
+    .footer-links a:hover {
+        color: var(--accent);
+    }
+
+
+    /* ================================
+       Mobile
+    ================================= */
+
+
+    @media (max-width: 750px) {
+
+        .container {
+            width: min(100% - 32px, 900px);
+        }
+
+
+        .hero {
+            padding: 70px 0 60px;
+        }
+
+
+        .terms-layout {
+            grid-template-columns: 1fr;
+
+            gap: 45px;
+        }
+
+
+        .terms-nav {
+            display: none;
+        }
+
+
+        .content {
+            padding: 55px 0 80px;
+        }
+
+
+        .terms-section {
+            padding-bottom: 35px;
+
+            margin-bottom: 35px;
+        }
+
+
+        .footer {
+            padding: 25px 0;
+
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+    }
+
+
+    @media (prefers-reduced-motion: reduce) {
+
+        * {
+            scroll-behavior: auto;
+
+            transition-duration: 0.01ms !important;
+        }
+
+    }
+
+</style>
+```
+
+</head>
+
+<body>
+
+```
+<header>
+
+    <div class="container nav">
+
+        <a href="/" class="brand">
+            Homework Journal<span class="brand-dot">.</span>
+        </a>
+
+
+        <a href="/" class="back-link">
+            ← Back to home
+        </a>
+
+    </div>
+
+</header>
+
+
+
+<main>
+
+
+    <section class="hero">
+
+        <div class="container hero-content">
+
+            <div class="eyebrow">
+
+                <span class="eyebrow-line"></span>
+
+                Legal
+
+            </div>
+
+
+            <h1>
+                Terms of Service
+            </h1>
+
+
+            <p class="hero-text">
+
+                These Terms of Service govern your access to and
+                use of Homework Journal.
+
+            </p>
+
+
+            <div class="updated">
+                Last updated: September 12, 2026
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <section class="content">
+
+        <div class="container terms-layout">
+
+
+            <nav class="terms-nav">
+
+                <div class="terms-nav-title">
+                    Contents
+                </div>
+
+
+                <a href="#acceptance">
+                    Acceptance
+                </a>
+
+                <a href="#access">
+                    Access
+                </a>
+
+                <a href="#accounts">
+                    Accounts
+                </a>
+
+                <a href="#recovery">
+                    Account recovery
+                </a>
+
+                <a href="#acceptable-use">
+                    Acceptable use
+                </a>
+
+                <a href="#content">
+                    User content
+                </a>
+
+                <a href="#removal">
+                    Removal of access
+                </a>
+
+                <a href="#changes">
+                    Changes
+                </a>
+
+                <a href="#availability">
+                    Availability
+                </a>
+
+                <a href="#warranties">
+                    No warranties
+                </a>
+
+                <a href="#liability">
+                    Liability
+                </a>
+
+                <a href="#responsibility">
+                    Your responsibility
+                </a>
+
+                <a href="#third-parties">
+                    Third parties
+                </a>
+
+                <a href="#termination">
+                    Termination
+                </a>
+
+                <a href="#law">
+                    Governing law
+                </a>
+
+                <a href="#general">
+                    General terms
+                </a>
+
+                <a href="#contact">
+                    Contact
+                </a>
+
+            </nav>
+
+
+
+            <article class="terms">
+
+
+                <section
+                    class="terms-section"
+                    id="acceptance"
+                >
+
+                    <h2>
+                        1. Acceptance of these Terms
+                    </h2>
+
+
+                    <p>
+
+                        These Terms of Service govern your access
+                        to and use of Homework Journal.
+
+                    </p>
+
+
+                    <p>
+
+                        By accessing or using Homework Journal, you
+                        agree to be bound by these Terms and the
+                        Homework Journal Privacy Policy.
+
+                    </p>
+
+
+                    <p>
+
+                        If you do not agree with these Terms or the
+                        Privacy Policy, you must not use Homework
+                        Journal.
+
+                    </p>
+
+                </section>
+
+
+
+                <section
+                    class="terms-section"
+                    id="access"
+                >
+
+                    <h2>
+                        2. Access to Homework Journal
+                    </h2>
+
+
+                    <p>
+
+                        Homework Journal is currently available on
+                        an invite-only basis.
+
+                    </p>
+
+
+                    <p>
+
+                        Public account registration is not currently
+                        available. Accounts may be created and access
+                        may be granted on an as-needed basis.
+
+                    </p>
+
+
+                    <p>
+
+                        Access to Homework Journal is not guaranteed
+                        to any person.
+
+                    </p>
+
+
+                    <p>
+
+                        The operator of Homework Journal reserves the
+                        right to grant, refuse, restrict, suspend or
+                        remove access to the service at their sole
+                        discretion.
+
+                    </p>
+
+
+                    <div class="highlight">
+
+                        <p>
+
+                            Access may be removed at any time, with
+                            or without notice and without a reason
+                            being provided, to the maximum extent
+                            permitted by applicable law.
+
+                        </p>
+
+                    </div>
+
+                </section>
+
+
+
+                <section
+                    class="terms-section"
+                    id="accounts"
+                >
+
+                    <h2>
+                        3. Accounts and login credentials
+                    </h2>
+
+
+                    <p>
+
+                        Homework Journal accounts and login
+                        credentials are intended for use by one
+                        individual only.
+
+                    </p>
+
+
+                    <p>
+
+                        You must not share your account, password,
+                        login credentials or other access information
+                        with another person.
+
+                    </p>
+
+
+                    <p>
+
+                        You are responsible for maintaining the
+                        security of your account and login
+                        credentials.
+
+                    </p>
+
+
+                    <p>
+
+                        You are responsible for activity carried out
+                        through your account where permitted by
+                        applicable law.
+
+                    </p>
+
+
+                    <p>
+
+                        If you choose to share your login credentials,
+                        you accept responsibility for the consequences
+                        of doing so.
+
+                    </p>
+
+
+                    <p>
+
+                        Homework Journal is not responsible for
+                        unauthorised access, loss of information or
+                        other consequences resulting from your
+                        voluntary sharing of account credentials.
+
+                    </p>
+
+                </section>
+
+
+
+                <section
+                    class="terms-section"
+                    id="recovery"
+                >
+
+                    <h2>
+                        4. Account access and recovery
+                    </h2>
+
+
+                    <p>
+
+                        If you lose access to the email account,
+                        Google account or other authentication method
+                        associated with Homework Journal, you may
+                        contact:
+
+                    </p>
+
+
+                    <a
+                        href="mailto:aarondoran@outlook.ie"
+                        class="contact-link"
+                    >
+                        aarondoran@outlook.ie
+                    </a>
+
+
+                    <p>
+
+                        You may be asked to provide reasonable
+                        information to demonstrate that you are the
+                        legitimate owner of the Homework Journal
+                        account.
+
+                    </p>
+
+
+                    <p>
+
+                        If ownership of an account cannot reasonably
+                        be established, access to the account may not
+                        be restored.
+
+                    </p>
+
+
+                    <p>
+
+                        In some circumstances, an account may be
+                        permanently inaccessible or removed where
+                        account ownership cannot be adequately
+                        verified.
+
+                    </p>
+
+
+                    <div class="warning">
+
+                        <p>
+
+                            You are responsible for maintaining
+                            access to your authentication methods
+                            and for keeping important information
+                            backed up.
+
+                        </p>
+
+                    </div>
+
+                </section>
+
+
+
+                <section
+                    class="terms-section"
+                    id="acceptable-use"
+                >
+
+                    <h2>
+                        5. Acceptable use
+                    </h2>
+
+
+                    <p>
+
+                        You agree to use Homework Journal lawfully
+                        and responsibly.
+
+                    </p>
+
+
+                    <p>
+                        You must not:
+                    </p>
+
+
+                    <ul>
+
+                        <li>
+                            Attempt to gain unauthorised access to
+                            another user's account or information.
+                        </li>
+
+                        <li>
+                            Attempt to bypass authentication or
+                            security measures.
+                        </li>
+
+                        <li>
+                            Attempt to hack, damage, disrupt,
+                            overload or interfere with Homework
+                            Journal.
+                        </li>
+
+                        <li>
+                            Attempt to interfere with the normal
+                            operation or security of the service.
+                        </li>
+
+                        <li>
+                            Use automated systems in a manner that
+                            damages or excessively interferes with
+                            the service.
+                        </li>
+
+                        <li>
+                            Use Homework Journal for unlawful
+                            purposes.
+                        </li>
+
+                        <li>
+                            Share an account or login credentials
+                            with another person.
+                        </li>
+
+                        <li>
+                            Attempt to access information that you
+                            are not authorised to access.
+                        </li>
+
+                    </ul>
+
+
+                    <p>
+
+                        Violations of these Terms may result in
+                        immediate suspension or permanent removal
+                        of access.
+
+                    </p>
+
+                </section>
+
+
+
+                <section
+                    class="terms-section"
+                    id="content"
+                >
+
+                    <h2>
+                        6. User content
+                    </h2>
+
+
+                    <p>
+
+                        Homework Journal allows users to enter and
+                        store information such as homework subjects,
+                        homework instructions, notes, due dates and
+                        timetable images.
+
+                    </p>
+
+
+                    <p>
+
+                        You are responsible for the information and
+                        content that you upload or enter into the
+                        application.
+
+                    </p>
+
+
+                    <h3>
+                        Timetable images
+                    </h3>
+
+
+                    <p>
+
+                        Images uploaded to Homework Journal should
+                        be appropriate for a school, work or
+                        child-friendly environment.
+
+                    </p>
+
+
+                    <p>
+
+                        Uploading inappropriate, unlawful, abusive,
+                        harmful or unsuitable content may result in
+                        the suspension or permanent removal of your
+                        account.
+
+                    </p>
+
+
+                    <p>
+
+                        Homework Journal reserves the right to
+                        remove content or restrict access where
+                        content is considered inappropriate or
+                        inconsistent with these Terms.
+
+                    </p>
+
+                </section>
+
+
+
+                <section
+                    class="terms-section"
+                    id="removal"
+                >
+
+                    <h2>
+                        7. Removal of accounts and access
+                    </h2>
+
+
+                    <p>
+
+                        Homework Journal reserves the right to
+                        remove, suspend, restrict or terminate any
+                        account or access to the service.
+
+                    </p>
+
+
+                    <p>
+
+                        This may occur for misuse, violations of
+                        these Terms, security reasons, operational
+                        reasons or any other reason determined at
+                        the operator's discretion.
+
+                    </p>
+
+
+                    <p>
+
+                        To the maximum extent permitted by applicable
+                        law, access may be removed without advance
+                        notice and without an explanation being
+                        provided.
+
+                    </p>
+
+
+                    <p>
+
+                        The removal of an account or access does not
+                        create an entitlement to compensation,
+                        reimbursement or damages, except where such
+                        exclusion is not permitted by applicable law.
+
+                    </p>
+
+                </section>
+
+
+
+                <section
+                    class="terms-section"
+                    id="changes"
+                >
+
+                    <h2>
+                        8. Changes to the service and Terms
+                    </h2>
+
+
+                    <h3>
+                        Changes to Homework Journal
+                    </h3>
+
+
+                    <p>
+
+                        Homework Journal may be changed, updated,
+                        modified, restricted, suspended or
+                        discontinued.
+
+                    </p>
+
+
+                    <p>
+
+                        Features may be added, changed or removed
+                        at any time.
+
+                    </p>
+
+
+                    <p>
+
+                        Homework Journal may be temporarily
+                        unavailable for maintenance, technical
+                        reasons, updates or other operational
+                        reasons.
+
+                    </p>
+
+
+                    <p>
+
+                        To the maximum extent permitted by
+                        applicable law, compensation will not be
+                        provided for changes, removal of features,
+                        temporary unavailability or discontinuation
+                        of the service.
+
+                    </p>
+
+
+                    <h3>
+                        Changes to these Terms
+                    </h3>
+
+
+                    <p>
+
+                        These Terms and the Privacy Policy may be
+                        updated from time to time.
+
+                    </p>
+
+
+                    <p>
+
+                        You are responsible for reviewing the
+                        current Terms of Service and Privacy Policy
+                        as often as reasonably necessary.
+
+                    </p>
+
+
+                    <p>
+
+                        Continued use of Homework Journal after
+                        updated Terms become effective may
+                        constitute acceptance of those updated Terms
+                        to the extent permitted by applicable law.
+
+                    </p>
+
+
+                    <div class="warning">
+
+                        <p>
+
+                            If you disagree with updated Terms,
+                            updated policies or the way information
+                            is held, you must stop using Homework
+                            Journal immediately.
+
+                        </p>
+
+                    </div>
+
+
+                    <p>
+
+                        Where appropriate, you may also need to
+                        request deletion of your account and
+                        associated information if you no longer wish
+                        your information to be held in accordance
+                        with the applicable Privacy Policy.
+
+                    </p>
+
+                </section>
+
+
+
+                <section
+                    class="terms-section"
+                    id="availability"
+                >
+
+                    <h2>
+                        9. Service availability
+                    </h2>
+
+
+                    <p>
+
+                        Homework Journal is provided free of charge.
+
+                    </p>
+
+
+                    <p>
+
+                        The service may experience interruptions,
+                        outages, maintenance periods, technical
+                        failures, errors or other periods of
+                        unavailability.
+
+                    </p>
+
+
+                    <p>
+
+                        Homework Journal does not guarantee that
+                        the service will always be available,
+                        uninterrupted, timely, error-free or secure.
+
+                    </p>
+
+
+                    <p>
+
+                        The service may be permanently discontinued
+                        at any time.
+
+                    </p>
+
+                </section>
+
+
+
+                <section
+                    class="terms-section"
+                    id="warranties"
+                >
+
+                    <h2>
+                        10. No warranties
+                    </h2>
+
+
+                    <p>
+
+                        TO THE MAXIMUM EXTENT PERMITTED BY
+                        APPLICABLE LAW, HOMEWORK JOURNAL IS PROVIDED
+                        ON AN "AS IS" AND "AS AVAILABLE" BASIS.
+
+                    </p>
+
+
+                    <p>
+
+                        No representation or warranty is made that
+                        Homework Journal will meet your requirements,
+                        operate without interruption, be error-free,
+                        be secure, remain available or provide
+                        accurate information at all times.
+
+                    </p>
+
+
+                    <p>
+
+                        To the maximum extent permitted by
+                        applicable law, all warranties, whether
+                        express, implied or statutory, are
+                        disclaimed.
+
+                    </p>
+
+
+                    <p>
+
+                        Nothing in these Terms excludes or limits
+                        any warranty, right or protection that cannot
+                        legally be excluded or limited under
+                        applicable law.
+
+                    </p>
+
+                </section>
+
+
+
+                <section
+                    class="terms-section"
+                    id="liability"
+                >
+
+                    <h2>
+                        11. Limitation of liability
+                    </h2>
+
+
+                    <p>
+
+                        Homework Journal is an organisational tool
+                        and should not be relied upon as the sole
+                        source of important academic or other
+                        information.
+
+                    </p>
+
+
+                    <p>
+
+                        You acknowledge that information entered
+                        into Homework Journal may be incomplete,
+                        incorrect, outdated, unavailable, deleted or
+                        otherwise affected by technical problems.
+
+                    </p>
+
+
+                    <p>
+
+                        To the maximum extent permitted by
+                        applicable law, Homework Journal and its
+                        operator shall not be liable for losses or
+                        consequences arising from your use of, or
+                        inability to use, the service.
+
+                    </p>
+
+
+                    <p>
+                        This includes, without limitation:
+                    </p>
+
+
+                    <ul>
+
+                        <li>
+                            Missed homework deadlines.
+                        </li>
+
+                        <li>
+                            Late or incomplete assignments.
+                        </li>
+
+                        <li>
+                            Incorrect homework information.
+                        </li>
+
+                        <li>
+                            Incorrect or missing due dates.
+                        </li>
+
+                        <li>
+                            Academic consequences.
+                        </li>
+
+                        <li>
+                            Lost, deleted or corrupted data.
+                        </li>
+
+                        <li>
+                            Unavailable information.
+                        </li>
+
+                        <li>
+                            Account access problems.
+                        </li>
+
+                        <li>
+                            Service outages or interruptions.
+                        </li>
+
+                        <li>
+                            Loss resulting from reliance on
+                            information stored in Homework Journal.
+                        </li>
+
+                    </ul>
+
+
+                    <div class="warning">
+
+                        <p>
+
+                            TO THE MAXIMUM EXTENT PERMITTED BY
+                            APPLICABLE LAW, NO COMPENSATION,
+                            REIMBURSEMENT OR PAYMENT WILL BE
+                            PROVIDED FOR LOSS OF ACCESS, DATA LOSS,
+                            SERVICE INTERRUPTIONS, REMOVAL OF
+                            FEATURES OR DISCONTINUATION OF THE
+                            FREE SERVICE.
+
+                        </p>
+
+                    </div>
+
+
+                    <p>
+
+                        Nothing in these Terms is intended to
+                        exclude or limit liability where doing so
+                        would be unlawful.
+
+                    </p>
+
+                </section>
+
+
+
+                <section
+                    class="terms-section"
+                    id="responsibility"
+                >
+
+                    <h2>
+                        12. Your responsibility
+                    </h2>
+
+
+                    <p>
+
+                        You are responsible for independently
+                        checking important information.
+
+                    </p>
+
+
+                    <p>
+
+                        You should not rely exclusively on Homework
+                        Journal for homework deadlines, school
+                        requirements, assignment instructions or
+                        other important information.
+
+                    </p>
+
+
+                    <p>
+
+                        You are responsible for checking deadlines
+                        and important information with appropriate
+                        sources, including teachers, schools or
+                        other relevant sources.
+
+                    </p>
+
+
+                    <p>
+
+                        You are also responsible for maintaining
+                        backups or copies of important information
+                        where appropriate.
+
+                    </p>
+
+
+                    <p>
+
+                        Homework Journal provides a "Download My
+                        Information" feature to allow you to access
+                        and download your information.
+
+                    </p>
+
+
+                    <div class="highlight">
+
+                        <p>
+
+                            The availability of a download feature
+                            does not remove your responsibility to
+                            maintain appropriate copies of important
+                            information.
+
+                        </p>
+
+                    </div>
+
+                </section>
+
+
+
+                <section
+                    class="terms-section"
+                    id="third-parties"
+                >
+
+                    <h2>
+                        13. Third-party services
+                    </h2>
+
+
+                    <p>
+
+                        Homework Journal relies on third-party
+                        services and infrastructure.
+
+                    </p>
+
+
+                    <p>
+                        These may include:
+                    </p>
+
+
+                    <ul>
+
+                        <li>Google</li>
+
+                        <li>Firebase</li>
+
+                        <li>Firebase Authentication</li>
+
+                        <li>Cloud Firestore</li>
+
+                        <li>GitHub</li>
+
+                        <li>GitHub Pages</li>
+
+                    </ul>
+
+
+                    <p>
+
+                        Third-party services may experience
+                        outages, technical problems, changes,
+                        restrictions or discontinuation.
+
+                    </p>
+
+
+                    <p>
+
+                        To the maximum extent permitted by
+                        applicable law, Homework Journal is not
+                        responsible for problems caused by
+                        third-party services, internet connections,
+                        devices, operating systems, browsers or
+                        other infrastructure outside the direct
+                        control of Homework Journal.
+
+                    </p>
+
+
+                    <p>
+
+                        Your use of third-party services may also
+                        be subject to their own terms, policies and
+                        agreements.
+
+                    </p>
+
+                </section>
+
+
+
+                <section
+                    class="terms-section"
+                    id="termination"
+                >
+
+                    <h2>
+                        14. Termination and discontinuation
+                    </h2>
+
+
+                    <p>
+
+                        You may stop using Homework Journal at any
+                        time.
+
+                    </p>
+
+
+                    <p>
+
+                        Homework Journal may suspend or terminate
+                        your access at any time in accordance with
+                        these Terms and applicable law.
+
+                    </p>
+
+
+                    <p>
+
+                        Homework Journal may also permanently
+                        discontinue the service.
+
+                    </p>
+
+
+                    <p>
+
+                        Because Homework Journal is provided free
+                        of charge, no compensation will be provided
+                        for the termination or discontinuation of
+                        the service, to the maximum extent permitted
+                        by applicable law.
+
+                    </p>
+
+
+                    <p>
+
+                        If you wish to request deletion of your
+                        account, contact:
+
+                    </p>
+
+
+                    <a
+                        href="mailto:aarondoran@outlook.ie"
+                        class="contact-link"
+                    >
+                        aarondoran@outlook.ie
+                    </a>
+
+                </section>
+
+
+
+                <section
+                    class="terms-section"
+                    id="law"
+                >
+
+                    <h2>
+                        15. Governing law and jurisdiction
+                    </h2>
+
+
+                    <p>
+
+                        These Terms shall be governed by and
+                        interpreted in accordance with the laws of
+                        Ireland.
+
+                    </p>
+
+
+                    <p>
+
+                        Subject to any mandatory rights provided by
+                        applicable law, disputes arising from or
+                        relating to these Terms or Homework Journal
+                        shall be subject to the jurisdiction of the
+                        courts of Ireland.
+
+                    </p>
+
+
+                    <p>
+
+                        Nothing in this section is intended to
+                        deprive a user of protections that cannot
+                        legally be excluded.
+
+                    </p>
+
+                </section>
+
+
+
+                <section
+                    class="terms-section"
+                    id="general"
+                >
+
+                    <h2>
+                        16. General terms
+                    </h2>
+
+
+                    <h3>
+                        Severability
+                    </h3>
+
+
+                    <p>
+
+                        If any provision of these Terms is found to
+                        be invalid, unlawful or unenforceable, that
+                        provision shall be limited or removed to the
+                        minimum extent necessary.
+
+                    </p>
+
+
+                    <p>
+
+                        The remaining provisions of these Terms
+                        shall continue to apply to the extent
+                        permitted by applicable law.
+
+                    </p>
+
+
+                    <h3>
+                        Entire agreement
+                    </h3>
+
+
+                    <p>
+
+                        These Terms of Service, together with the
+                        Homework Journal Privacy Policy, form the
+                        agreement governing your use of Homework
+                        Journal.
+
+                    </p>
+
+
+                    <h3>
+                        No waiver
+                    </h3>
+
+
+                    <p>
+
+                        A failure to enforce any provision of these
+                        Terms does not constitute a waiver of the
+                        right to enforce that provision at a later
+                        time.
+
+                    </p>
+
+                </section>
+
+
+
+                <section
+                    class="terms-section"
+                    id="contact"
+                >
+
+                    <h2>
+                        17. Contact
+                    </h2>
+
+
+                    <div class="contact-box">
+
+                        <p>
+
+                            If you have questions about these Terms
+                            of Service or Homework Journal, please
+                            contact:
+
+                        </p>
+
+
+                        <a
+                            href="mailto:aarondoran@outlook.ie"
+                            class="contact-link"
+                        >
+                            aarondoran@outlook.ie
+                        </a>
+
+                    </div>
+
+                </section>
+
+
+            </article>
+
+
+        </div>
+
+    </section>
+
+
+</main>
+
+
+
+<footer>
+
+    <div class="container footer">
+
+        <div class="footer-copy">
+            © 2026 Aaron Doran
+        </div>
+
+
+        <nav class="footer-links">
+
+            <a href="index.html">
+                Home
+            </a>
+
+            <a href="privacy.html">
+                Privacy Policy
+            </a>
+
+            <a href="terms.html">
+                Terms of Service
+            </a>
+
+        </nav>
+
+    </div>
+
+</footer>
+```
+
+</body>
+</html>
